@@ -46,7 +46,7 @@ import org.springframework.util.Assert;
  * @author Christoph Strobl
  * @author Mark Paluch
  */
-public class Query {
+public class Query implements GenericQuery {
 
 	private static final String RESTRICTED_TYPES_KEY = "_$RESTRICTED_TYPES";
 
@@ -473,6 +473,11 @@ public class Query {
 
 	protected List<CriteriaDefinition> getCriteria() {
 		return new ArrayList<>(this.criteria.values());
+	}
+
+	@Override
+	public Query getQuery() {
+		return this;
 	}
 
 	/*
