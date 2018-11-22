@@ -29,6 +29,7 @@ import org.springframework.data.mongodb.core.mapreduce.GroupByResults
 import org.springframework.data.mongodb.core.mapreduce.MapReduceOptions
 import org.springframework.data.mongodb.core.mapreduce.MapReduceResults
 import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.GenericQuery
 import org.springframework.data.mongodb.core.query.NearQuery
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
@@ -68,8 +69,8 @@ inline fun <reified T : Any> MongoOperations.execute(action: CollectionCallback<
  * @author Sebastien Deleuze
  * @since 2.0
  */
-inline fun <reified T : Any> MongoOperations.stream(query: Query): CloseableIterator<T> =
-		stream(query, T::class.java)
+inline fun <reified T : Any> MongoOperations.stream(genericQuery: GenericQuery<T>): CloseableIterator<T> =
+		stream(genericQuery.query, T::class.java)
 
 /**
  * Extension for [MongoOperations.stream] leveraging reified type parameters.
@@ -77,9 +78,9 @@ inline fun <reified T : Any> MongoOperations.stream(query: Query): CloseableIter
  * @author Sebastien Deleuze
  * @since 2.0
  */
-inline fun <reified T : Any> MongoOperations.stream(query: Query, collectionName: String? = null): CloseableIterator<T> =
-		if (collectionName != null) stream(query, T::class.java, collectionName)
-		else stream(query, T::class.java)
+inline fun <reified T : Any> MongoOperations.stream(genericQuery: GenericQuery<T>, collectionName: String? = null): CloseableIterator<T> =
+		if (collectionName != null) stream(genericQuery.query, T::class.java, collectionName)
+		else stream(genericQuery.query, T::class.java)
 
 /**
  * Extension for [MongoOperations.createCollection] providing a [KClass] based variant.
@@ -258,9 +259,9 @@ inline fun <reified T : Any> MongoOperations.mapReduce(collectionName: String, m
  * @author Sebastien Deleuze
  * @since 52.0
  */
-inline fun <reified T : Any> MongoOperations.mapReduce(query: Query, collectionName: String, mapFunction: String, reduceFunction: String, options: MapReduceOptions? = null): MapReduceResults<T> =
-		if (options != null) mapReduce(query, collectionName, mapFunction, reduceFunction, options, T::class.java)
-		else mapReduce(query, collectionName, mapFunction, reduceFunction, T::class.java)
+inline fun <reified T : Any> MongoOperations.mapReduce(genericQuery: GenericQuery<T>, collectionName: String, mapFunction: String, reduceFunction: String, options: MapReduceOptions? = null): MapReduceResults<T> =
+		if (options != null) mapReduce(genericQuery.query, collectionName, mapFunction, reduceFunction, options, T::class.java)
+		else mapReduce(genericQuery.query, collectionName, mapFunction, reduceFunction, T::class.java)
 
 /**
  * Extension for [MongoOperations.geoNear] leveraging reified type parameters.
@@ -278,8 +279,8 @@ inline fun <reified T : Any> MongoOperations.geoNear(near: NearQuery, collection
  * @author Sebastien Deleuze
  * @since 2.0
  */
-inline fun <reified T : Any> MongoOperations.findOne(query: Query, collectionName: String? = null): T? =
-		if (collectionName != null) findOne(query, T::class.java, collectionName) else findOne(query, T::class.java)
+inline fun <reified T : Any> MongoOperations.findOne(genericQuery: GenericQuery<T>, collectionName: String? = null): T? =
+		if (collectionName != null) findOne(genericQuery.query, T::class.java, collectionName) else findOne(genericQuery.query, T::class.java)
 
 /**
  * Extension for [MongoOperations.exists] providing a [KClass] based variant.
@@ -287,9 +288,9 @@ inline fun <reified T : Any> MongoOperations.findOne(query: Query, collectionNam
  * @author Sebastien Deleuze
  * @since 2.0
  */
-fun <T : Any> MongoOperations.exists(query: Query, entityClass: KClass<T>, collectionName: String? = null): Boolean =
-		if (collectionName != null) exists(query, entityClass.java, collectionName)
-		else exists(query, entityClass.java)
+fun <T : Any> MongoOperations.exists(genericQuery: GenericQuery<T>, entityClass: KClass<T>, collectionName: String? = null): Boolean =
+		if (collectionName != null) exists(genericQuery.query, entityClass.java, collectionName)
+		else exists(genericQuery.query, entityClass.java)
 
 /**
  * Extension for [MongoOperations.exists] leveraging reified type parameters.
@@ -298,9 +299,9 @@ fun <T : Any> MongoOperations.exists(query: Query, entityClass: KClass<T>, colle
  * @since 2.0
  */
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
-inline fun <reified T : Any> MongoOperations.exists(query: Query, collectionName: String? = null): Boolean =
-		if (collectionName != null) exists(query, T::class.java, collectionName)
-		else exists(query, T::class.java)
+inline fun <reified T : Any> MongoOperations.exists(genericQuery: GenericQuery<T>, collectionName: String? = null): Boolean =
+		if (collectionName != null) exists(genericQuery.query, T::class.java, collectionName)
+		else exists(genericQuery.query, T::class.java)
 
 /**
  * Extension for [MongoOperations.find] leveraging reified type parameters.
@@ -308,9 +309,9 @@ inline fun <reified T : Any> MongoOperations.exists(query: Query, collectionName
  * @author Sebastien Deleuze
  * @since 2.0
  */
-inline fun <reified T : Any> MongoOperations.find(query: Query, collectionName: String? = null): List<T> =
-		if (collectionName != null) find(query, T::class.java, collectionName)
-		else find(query, T::class.java)
+inline fun <reified T : Any> MongoOperations.find(genericQuery: GenericQuery<T>, collectionName: String? = null): List<T> =
+		if (collectionName != null) find(genericQuery.query, T::class.java, collectionName)
+		else find(genericQuery.query, T::class.java)
 
 /**
  * Extension for [MongoOperations.findById] leveraging reified type parameters.
@@ -337,8 +338,8 @@ inline fun <reified T : Any> MongoOperations.findDistinct(field: String, entityC
  * @author Christoph Strobl
  * @since 2.1
  */
-inline fun <reified T : Any> MongoOperations.findDistinct(query: Query, field: String, entityClass: KClass<*>): List<T> =
-		findDistinct(query, field, entityClass.java, T::class.java)
+inline fun <reified T : Any> MongoOperations.findDistinct(genericQuery: GenericQuery<T>, field: String, entityClass: KClass<*>): List<T> =
+		findDistinct(genericQuery.query, field, entityClass.java, T::class.java)
 
 /**
  * Extension for [MongoOperations.findDistinct] leveraging reified type parameters.
@@ -346,8 +347,8 @@ inline fun <reified T : Any> MongoOperations.findDistinct(query: Query, field: S
  * @author Christoph Strobl
  * @since 2.1
  */
-inline fun <reified T : Any> MongoOperations.findDistinct(query: Query, field: String, collectionName: String, entityClass: KClass<*>): List<T> =
-		findDistinct(query, field, collectionName, entityClass.java, T::class.java)
+inline fun <reified T : Any> MongoOperations.findDistinct(genericQuery: GenericQuery<T>, field: String, collectionName: String, entityClass: KClass<*>): List<T> =
+		findDistinct(genericQuery.query, field, collectionName, entityClass.java, T::class.java)
 
 /**
  * Extension for [MongoOperations.findDistinct] leveraging reified type parameters.
@@ -356,9 +357,9 @@ inline fun <reified T : Any> MongoOperations.findDistinct(query: Query, field: S
  * @author Mark Paluch
  * @since 2.1
  */
-inline fun <reified T : Any, reified E : Any> MongoOperations.findDistinct(query: Query, field: String, collectionName: String? = null): List<T> =
-		if (collectionName != null) findDistinct(query, field, collectionName, E::class.java, T::class.java)
-		else findDistinct(query, field, E::class.java, T::class.java)
+inline fun <reified T : Any, reified E : Any> MongoOperations.findDistinct(genericQuery: GenericQuery<T>, field: String, collectionName: String? = null): List<T> =
+		if (collectionName != null) findDistinct(genericQuery.query, field, collectionName, E::class.java, T::class.java)
+		else findDistinct(genericQuery.query, field, E::class.java, T::class.java)
 
 /**
  * Extension for [MongoOperations.findAndModify] leveraging reified type parameters.
@@ -366,9 +367,9 @@ inline fun <reified T : Any, reified E : Any> MongoOperations.findDistinct(query
  * @author Sebastien Deleuze
  * @since 2.0
  */
-inline fun <reified T : Any> MongoOperations.findAndModify(query: Query, update: Update, options: FindAndModifyOptions, collectionName: String? = null): T? =
-		if (collectionName != null) findAndModify(query, update, options, T::class.java, collectionName)
-		else findAndModify(query, update, options, T::class.java)
+inline fun <reified T : Any> MongoOperations.findAndModify(genericQuery: GenericQuery<T>, update: Update, options: FindAndModifyOptions, collectionName: String? = null): T? =
+		if (collectionName != null) findAndModify(genericQuery.query, update, options, T::class.java, collectionName)
+		else findAndModify(genericQuery.query, update, options, T::class.java)
 
 /**
  * Extension for [MongoOperations.findAndRemove] leveraging reified type parameters.
@@ -376,9 +377,9 @@ inline fun <reified T : Any> MongoOperations.findAndModify(query: Query, update:
  * @author Sebastien Deleuze
  * @since 2.0
  */
-inline fun <reified T : Any> MongoOperations.findAndRemove(query: Query, collectionName: String? = null): T? =
-		if (collectionName != null) findAndRemove(query, T::class.java, collectionName)
-		else findAndRemove(query, T::class.java)
+inline fun <reified T : Any> MongoOperations.findAndRemove(genericQuery: GenericQuery<T>, collectionName: String? = null): T? =
+		if (collectionName != null) findAndRemove(genericQuery.query, T::class.java, collectionName)
+		else findAndRemove(genericQuery.query, T::class.java)
 
 /**
  * Extension for [MongoOperations.count] providing a [KClass] based variant.
@@ -386,9 +387,9 @@ inline fun <reified T : Any> MongoOperations.findAndRemove(query: Query, collect
  * @author Sebastien Deleuze
  * @since 2.0
  */
-fun <T : Any> MongoOperations.count(query: Query = Query(), entityClass: KClass<T>, collectionName: String? = null): Long =
-		if (collectionName != null) count(query, entityClass.java, collectionName)
-		else count(query, entityClass.java)
+fun <T : Any> MongoOperations.count(genericQuery: GenericQuery<T> = Query(), entityClass: KClass<T>, collectionName: String? = null): Long =
+		if (collectionName != null) count(genericQuery.query, entityClass.java, collectionName)
+		else count(genericQuery.query, entityClass.java)
 
 /**
  * Extension for [MongoOperations.count] leveraging reified type parameters.
@@ -397,8 +398,8 @@ fun <T : Any> MongoOperations.count(query: Query = Query(), entityClass: KClass<
  * @since 2.0
  */
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
-inline fun <reified T : Any> MongoOperations.count(query: Query = Query(), collectionName: String? = null): Long =
-		if (collectionName != null) count(query, T::class.java, collectionName) else count(query, T::class.java)
+inline fun <reified T : Any> MongoOperations.count(genericQuery: GenericQuery<T> = Query(), collectionName: String? = null): Long =
+		if (collectionName != null) count(genericQuery.query, T::class.java, collectionName) else count(genericQuery.query, T::class.java)
 
 /**
  * Extension for [MongoOperations.insert] providing a [KClass] based variant.
@@ -416,9 +417,9 @@ fun <T : Any> MongoOperations.insert(batchToSave: Collection<T>, entityClass: KC
  * @author Sebastien Deleuze
  * @since 2.0
  */
-fun <T : Any> MongoOperations.upsert(query: Query, update: Update, entityClass: KClass<T>, collectionName: String? = null): UpdateResult =
-		if (collectionName != null) upsert(query, update, entityClass.java, collectionName)
-		else upsert(query, update, entityClass.java)
+fun <T : Any> MongoOperations.upsert(genericQuery: GenericQuery<T>, update: Update, entityClass: KClass<T>, collectionName: String? = null): UpdateResult =
+		if (collectionName != null) upsert(genericQuery.query, update, entityClass.java, collectionName)
+		else upsert(genericQuery.query, update, entityClass.java)
 
 /**
  * Extension for [MongoOperations.upsert] leveraging reified type parameters.
@@ -427,9 +428,9 @@ fun <T : Any> MongoOperations.upsert(query: Query, update: Update, entityClass: 
  * @since 2.0
  */
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
-inline fun <reified T : Any> MongoOperations.upsert(query: Query, update: Update, collectionName: String? = null): UpdateResult =
-		if (collectionName != null) upsert(query, update, T::class.java, collectionName)
-		else upsert(query, update, T::class.java)
+inline fun <reified T : Any> MongoOperations.upsert(genericQuery: GenericQuery<T>, update: Update, collectionName: String? = null): UpdateResult =
+		if (collectionName != null) upsert(genericQuery.query, update, T::class.java, collectionName)
+		else upsert(genericQuery.query, update, T::class.java)
 
 /**
  * Extension for [MongoOperations.updateFirst] providing a [KClass] based variant.
@@ -437,9 +438,9 @@ inline fun <reified T : Any> MongoOperations.upsert(query: Query, update: Update
  * @author Sebastien Deleuze
  * @since 2.0
  */
-fun <T : Any> MongoOperations.updateFirst(query: Query, update: Update, entityClass: KClass<T>, collectionName: String? = null): UpdateResult =
-		if (collectionName != null) updateFirst(query, update, entityClass.java, collectionName)
-		else updateFirst(query, update, entityClass.java)
+fun <T : Any> MongoOperations.updateFirst(genericQuery: GenericQuery<T>, update: Update, entityClass: KClass<T>, collectionName: String? = null): UpdateResult =
+		if (collectionName != null) updateFirst(genericQuery.query, update, entityClass.java, collectionName)
+		else updateFirst(genericQuery.query, update, entityClass.java)
 
 /**
  * Extension for [MongoOperations.updateFirst] leveraging reified type parameters.
@@ -448,9 +449,9 @@ fun <T : Any> MongoOperations.updateFirst(query: Query, update: Update, entityCl
  * @since 2.0
  */
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
-inline fun <reified T : Any> MongoOperations.updateFirst(query: Query, update: Update, collectionName: String? = null): UpdateResult =
-		if (collectionName != null) updateFirst(query, update, T::class.java, collectionName)
-		else updateFirst(query, update, T::class.java)
+inline fun <reified T : Any> MongoOperations.updateFirst(genericQuery: GenericQuery<T>, update: Update, collectionName: String? = null): UpdateResult =
+		if (collectionName != null) updateFirst(genericQuery.query, update, T::class.java, collectionName)
+		else updateFirst(genericQuery.query, update, T::class.java)
 
 /**
  * Extension for [MongoOperations.updateMulti] providing a [KClass] based variant.
@@ -458,9 +459,9 @@ inline fun <reified T : Any> MongoOperations.updateFirst(query: Query, update: U
  * @author Sebastien Deleuze
  * @since 2.0
  */
-fun <T : Any> MongoOperations.updateMulti(query: Query, update: Update, entityClass: KClass<T>, collectionName: String? = null): UpdateResult =
-		if (collectionName != null) updateMulti(query, update, entityClass.java, collectionName)
-		else updateMulti(query, update, entityClass.java)
+fun <T : Any> MongoOperations.updateMulti(genericQuery: GenericQuery<T>, update: Update, entityClass: KClass<T>, collectionName: String? = null): UpdateResult =
+		if (collectionName != null) updateMulti(genericQuery.query, update, entityClass.java, collectionName)
+		else updateMulti(genericQuery.query, update, entityClass.java)
 
 /**
  * Extension for [MongoOperations.updateMulti] leveraging reified type parameters.
@@ -469,9 +470,9 @@ fun <T : Any> MongoOperations.updateMulti(query: Query, update: Update, entityCl
  * @since 2.0
  */
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
-inline fun <reified T : Any> MongoOperations.updateMulti(query: Query, update: Update, collectionName: String? = null): UpdateResult =
-		if (collectionName != null) updateMulti(query, update, T::class.java, collectionName)
-		else updateMulti(query, update, T::class.java)
+inline fun <reified T : Any> MongoOperations.updateMulti(genericQuery: GenericQuery<T>, update: Update, collectionName: String? = null): UpdateResult =
+		if (collectionName != null) updateMulti(genericQuery.query, update, T::class.java, collectionName)
+		else updateMulti(genericQuery.query, update, T::class.java)
 
 /**
  * Extension for [MongoOperations.remove] providing a [KClass] based variant.
@@ -479,9 +480,9 @@ inline fun <reified T : Any> MongoOperations.updateMulti(query: Query, update: U
  * @author Sebastien Deleuze
  * @since 2.0
  */
-fun <T : Any> MongoOperations.remove(query: Query, entityClass: KClass<T>, collectionName: String? = null): DeleteResult =
-		if (collectionName != null) remove(query, entityClass.java, collectionName)
-		else remove(query, entityClass.java)
+fun <T : Any> MongoOperations.remove(genericQuery: GenericQuery<T>, entityClass: KClass<T>, collectionName: String? = null): DeleteResult =
+		if (collectionName != null) remove(genericQuery.query, entityClass.java, collectionName)
+		else remove(genericQuery.query, entityClass.java)
 
 /**
  * Extension for [MongoOperations.remove] leveraging reified type parameters.
@@ -490,9 +491,9 @@ fun <T : Any> MongoOperations.remove(query: Query, entityClass: KClass<T>, colle
  * @since 2.0
  */
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
-inline fun <reified T : Any> MongoOperations.remove(query: Query, collectionName: String? = null): DeleteResult =
-		if (collectionName != null) remove(query, T::class.java, collectionName)
-		else remove(query, T::class.java)
+inline fun <reified T : Any> MongoOperations.remove(genericQuery: GenericQuery<T>, collectionName: String? = null): DeleteResult =
+		if (collectionName != null) remove(genericQuery.query, T::class.java, collectionName)
+		else remove(genericQuery.query, T::class.java)
 
 /**
  * Extension for [MongoOperations.findAllAndRemove] leveraging reified type parameters.
@@ -500,5 +501,5 @@ inline fun <reified T : Any> MongoOperations.remove(query: Query, collectionName
  * @author Sebastien Deleuze
  * @since 2.0
  */
-inline fun <reified T : Any> MongoOperations.findAllAndRemove(query: Query): List<T> =
-		findAllAndRemove(query, T::class.java)
+inline fun <reified T : Any> MongoOperations.findAllAndRemove(genericQuery: GenericQuery<T>): List<T> =
+		findAllAndRemove(genericQuery.query, T::class.java)
