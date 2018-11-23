@@ -19,10 +19,14 @@ import org.bson.Document;
 import org.springframework.lang.Nullable;
 
 /**
+ *
+ * @param <T> Type of Entity that is queried, used for type-safe queries.
+ *
  * @author Oliver Gierke
  * @author Christoph Strobl
+ * @author Tjeu Kayim
  */
-public interface CriteriaDefinition {
+public interface CriteriaDefinition<T> {
 
 	/**
 	 * Get {@link Document} representation.
