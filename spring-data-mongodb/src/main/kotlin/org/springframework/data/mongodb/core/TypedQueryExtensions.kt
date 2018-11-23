@@ -138,7 +138,7 @@ inline fun <reified T : Any> MongoOperations.findAndRemove(typedQuery: TypedQuer
  *
  * @author Tjeu Kayim
  */
-fun <T : Any> MongoOperations.count(typedQuery: TypedQuery<T> = TypedQuery(), entityClass: KClass<T>, collectionName: String? = null): Long =
+fun <T : Any> MongoOperations.count(typedQuery: TypedQuery<T>, entityClass: KClass<T>, collectionName: String? = null): Long =
 	if (collectionName != null) count(typedQuery, entityClass.java, collectionName)
 	else count(typedQuery, entityClass.java)
 
@@ -147,7 +147,8 @@ fun <T : Any> MongoOperations.count(typedQuery: TypedQuery<T> = TypedQuery(), en
  *
  * @author Tjeu Kayim
  */
-inline fun <reified T : Any> MongoOperations.count(typedQuery: TypedQuery<T> = TypedQuery(), collectionName: String? = null): Long =
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+inline fun <reified T : Any> MongoOperations.count(typedQuery: TypedQuery<T>, collectionName: String? = null): Long =
 	if (collectionName != null) count(typedQuery, T::class.java, collectionName) else count(typedQuery, T::class.java)
 
 /**
@@ -164,6 +165,7 @@ fun <T : Any> MongoOperations.upsert(typedQuery: TypedQuery<T>, update: Update, 
  *
  * @author Tjeu Kayim
  */
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 inline fun <reified T : Any> MongoOperations.upsert(typedQuery: TypedQuery<T>, update: Update, collectionName: String? = null): UpdateResult =
 	if (collectionName != null) upsert(typedQuery, update, T::class.java, collectionName)
 	else upsert(typedQuery, update, T::class.java)
@@ -182,6 +184,7 @@ fun <T : Any> MongoOperations.updateFirst(typedQuery: TypedQuery<T>, update: Upd
  *
  * @author Tjeu Kayim
  */
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 inline fun <reified T : Any> MongoOperations.updateFirst(typedQuery: TypedQuery<T>, update: Update, collectionName: String? = null): UpdateResult =
 	if (collectionName != null) updateFirst(typedQuery, update, T::class.java, collectionName)
 	else updateFirst(typedQuery, update, T::class.java)
@@ -200,6 +203,7 @@ fun <T : Any> MongoOperations.updateMulti(typedQuery: TypedQuery<T>, update: Upd
  *
  * @author Tjeu Kayim
  */
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 inline fun <reified T : Any> MongoOperations.updateMulti(typedQuery: TypedQuery<T>, update: Update, collectionName: String? = null): UpdateResult =
 	if (collectionName != null) updateMulti(typedQuery, update, T::class.java, collectionName)
 	else updateMulti(typedQuery, update, T::class.java)
@@ -218,6 +222,7 @@ fun <T : Any> MongoOperations.remove(typedQuery: TypedQuery<T>, entityClass: KCl
  *
  * @author Tjeu Kayim
  */
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 inline fun <reified T : Any> MongoOperations.remove(typedQuery: TypedQuery<T>, collectionName: String? = null): DeleteResult =
 	if (collectionName != null) remove(typedQuery, T::class.java, collectionName)
 	else remove(typedQuery, T::class.java)
