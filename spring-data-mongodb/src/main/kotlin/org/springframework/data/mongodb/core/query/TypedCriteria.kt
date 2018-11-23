@@ -21,7 +21,7 @@ import kotlin.reflect.KProperty1
 /**
  * @author Tjeu Kayim
  */
-class TypedCriteria<T> : CriteriaDefinition<T> {
+class TypedCriteria<T : Any> : CriteriaDefinition<T> {
 	override fun getCriteriaObject(): Document = chain.criteriaObject
 
 	override fun getKey(): String? = chain.key
@@ -37,8 +37,12 @@ class TypedCriteria<T> : CriteriaDefinition<T> {
 	}
 }
 
-fun <T> typedCriteria(block: TypedCriteria<T>.() -> Unit): CriteriaDefinition<T> {
+fun <T : Any> typedCriteria(block: TypedCriteria<T>.() -> Unit): TypedCriteria<T> {
 	val typedCriteria = TypedCriteria<T>()
 	typedCriteria.block()
 	return typedCriteria
 }
+
+infix fun <T : Any, U : Any> KProperty1<T, U>.gt(value: U) = typedCriteria<T> { this@gt gt value }
+
+infix fun <T : Any, U : Any> KProperty1<T, U>.isEqualTo(value: U) = typedCriteria<T> { this@isEqualTo isEqualTo value }

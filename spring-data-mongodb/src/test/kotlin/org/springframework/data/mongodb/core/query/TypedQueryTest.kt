@@ -64,6 +64,22 @@ class TypedQueryTest {
 
 		assertEquals(classic.queryObject, typed.queryObject)
 	}
+
+	@Test
+	fun `TypedQuery addCriteria`() {
+		TypedQuery<Book>().addTypedCriteria(Book::price gt 1100)
+//		operations.find<Book>(TypedQuery().addTypedCriteria(typedCriteria {  }))
+	}
+
+	@Test
+	fun `Typed update`() {
+//		operations.updateFirst(Book::name isEqualTo "Moby-Dick", set(Book::price, 11))
+	}
+
+	@Test
+	fun `Nested query`() {
+
+	}
 }
 
 @Document("books")
@@ -71,11 +87,11 @@ data class Book(
 	val id: ObjectId,
 	val name: String,
 	val price: Int,
-	val available: Boolean
+	val available: Boolean,
+	val author: Author
 )
 
-@Document("books")
-data class AnotherBook(
+data class Author(
 	val id: ObjectId,
 	val name: String,
 	val price: Int,

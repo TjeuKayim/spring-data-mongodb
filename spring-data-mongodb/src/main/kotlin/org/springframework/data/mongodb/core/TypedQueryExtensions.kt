@@ -25,13 +25,8 @@ import org.springframework.data.mongodb.core.query.Update
 import org.springframework.data.util.CloseableIterator
 import kotlin.reflect.KClass
 
-/**
- * Extension for [MongoOperations.stream] leveraging reified type parameters.
- *
- * @author Tjeu Kayim
- */
-inline fun <reified T : Any> MongoOperations.stream(typedQuery: TypedQuery<T>): CloseableIterator<T> =
-	stream(typedQuery, T::class.java)
+
+// ========= From MongoOperationsExtensions.kt =============
 
 /**
  * Extension for [MongoOperations.stream] leveraging reified type parameters.
@@ -88,41 +83,35 @@ inline fun <reified T : Any> MongoOperations.find(typedQuery: TypedQuery<T>, col
 
 /**
  * Extension for [MongoOperations.findDistinct] leveraging reified type parameters.
- *
- * @author Christoph Strobl
- * @since 2.1
+ * TODO: Make field name typed
+ * @author Tjeu Kayim
  */
-inline fun <reified T : Any> MongoOperations.findDistinct(typedQuery: TypedQuery<T>, field: String, entityClass: KClass<*>): List<T> =
-	findDistinct(typedQuery, field, entityClass.java, T::class.java)
-
-/**
- * Extension for [MongoOperations.findDistinct] leveraging reified type parameters.
- *
- * @author Christoph Strobl
- * @since 2.1
- */
-inline fun <reified T : Any> MongoOperations.findDistinct(typedQuery: TypedQuery<T>, field: String, collectionName: String, entityClass: KClass<*>): List<T> =
-	findDistinct(typedQuery, field, collectionName, entityClass.java, T::class.java)
-
-/**
- * Extension for [MongoOperations.findDistinct] leveraging reified type parameters.
- *
- * @author Christoph Strobl
- * @author Mark Paluch
- * @since 2.1
- */
-inline fun <reified T : Any, reified E : Any> MongoOperations.findDistinct(typedQuery: TypedQuery<T>, field: String, collectionName: String? = null): List<T> =
+inline fun <reified T : Any, reified E : Any> MongoOperations.findDistinct(typedQuery: TypedQuery<E>, field: String, collectionName: String? = null): List<T> =
 	if (collectionName != null) findDistinct(typedQuery, field, collectionName, E::class.java, T::class.java)
 	else findDistinct(typedQuery, field, E::class.java, T::class.java)
 
 /**
  * Extension for [MongoOperations.findAndModify] leveraging reified type parameters.
- *
+ * TODO: Extension without options
+ * TODO: Make use of TypedUpdate
  * @author Tjeu Kayim
  */
 inline fun <reified T : Any> MongoOperations.findAndModify(typedQuery: TypedQuery<T>, update: Update, options: FindAndModifyOptions, collectionName: String? = null): T? =
 	if (collectionName != null) findAndModify(typedQuery, update, options, T::class.java, collectionName)
 	else findAndModify(typedQuery, update, options, T::class.java)
+
+/**
+ * Extension for [MongoOperations.findAndReplace] leveraging reified type parameters.
+ *
+ * @author Tjeu Kayim
+ */
+fun <T : Any> MongoOperations.findAndReplace(
+	typedQuery: TypedQuery<T>,
+	replacement: T,
+	options: FindAndReplaceOptions = FindAndReplaceOptions.empty(),
+	collectionName: String = getCollectionName(replacement.javaClass)
+) =
+	findAndReplace(typedQuery, replacement, options, replacement.javaClass, collectionName)
 
 /**
  * Extension for [MongoOperations.findAndRemove] leveraging reified type parameters.
@@ -153,7 +142,7 @@ inline fun <reified T : Any> MongoOperations.count(typedQuery: TypedQuery<T>, co
 
 /**
  * Extension for [MongoOperations.upsert] providing a [KClass] based variant.
- *
+ * TODO: TypedUpdate
  * @author Tjeu Kayim
  */
 fun <T : Any> MongoOperations.upsert(typedQuery: TypedQuery<T>, update: Update, entityClass: KClass<T>, collectionName: String? = null): UpdateResult =

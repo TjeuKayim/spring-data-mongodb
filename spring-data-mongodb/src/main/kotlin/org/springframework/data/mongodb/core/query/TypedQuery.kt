@@ -24,6 +24,11 @@ class TypedQuery<T : Any> : Query {
 	constructor(criteria: CriteriaDefinition<T>) : super(criteria)
 	constructor() : super()
 
+	override fun addCriteria(criteriaDefinition: CriteriaDefinition<*>) = this.apply {
+		super.addCriteria(criteriaDefinition)
+	}
+
+	fun addTypedCriteria(typedCriteria: TypedCriteria<T>) = addCriteria(typedCriteria)
 }
 
 fun <T : Any> typedQuery(block: TypedCriteria<T>.() -> Unit): TypedQuery<T> {
