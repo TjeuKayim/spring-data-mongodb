@@ -24,22 +24,22 @@ import kotlin.reflect.KProperty
 class TypedCriteria(
 	property: KProperty<Any?>,
 	val operation: Criteria.() -> Criteria
-) : CriteriaDefinition {
+) {
 	val name = property.name
 	val criteria by lazy { Criteria(name).operation() }
-
-	override fun getCriteriaObject(): Document = criteria.criteriaObject
-
-	override fun getKey(): String? = criteria.key
 }
 
 fun typedCriteria(criteria: TypedCriteriaBuilder.() -> Unit): CriteriaDefinition {
 	val builder = TypedCriteriaBuilder().apply(criteria)
-	return builder.chain.fold(Criteria()) { chain, head -> head.operation(chain.and(head.name)) }
+	return builder.build()
 }
 
+/**
+ * @author Tjeu Kayim
+ */
 class TypedCriteriaBuilder {
-	val chain = mutableListOf<TypedCriteria>()
+	private var criteria = Criteria()
+	private val operations = mutableListOf<TypedCriteria>()
 
 	infix fun <T> KProperty<T>.isEqualTo(value: T) = buildCriteria { isEqualTo(value) }
 	infix fun <T> KProperty<T>.ne(value: T) = buildCriteria { ne(value) }
@@ -56,7 +56,26 @@ class TypedCriteriaBuilder {
 	fun <T> KProperty<T>.all(vararg o: Any) = buildCriteria { all(*o) }
 	infix fun KProperty<Collection<*>>.size(s: Int) = buildCriteria { size(s) }
 
-	private fun <T> KProperty<T>.buildCriteria(operation: Criteria.() -> Criteria) {
-		chain.add(TypedCriteria(this, operation))
+	/**
+	 * Creates an 'or' criteria using the $or operator.
+	 */
+	fun or(other: TypedCriteriaBuilder.() -> Unit) {
+		build()
+		criteria.orOperator(*TypedCriteriaBuilder().apply(other).operations.map { it.criteria }.toTypedArray())
+	}
+
+	private fun <T> KProperty<T>.buildCriteria(operation: Criteria.() -> Criteria): TypedCriteria {
+		val typedCriteria = TypedCriteria(this, operation)
+		operations.add(typedCriteria)
+		return typedCriteria
+	}
+
+	/**
+	 * Apply all operations to criteria.
+	 */
+	fun build(): Criteria {
+		criteria = operations.fold(criteria) { chain, head -> head.operation(chain.and(head.name)) }
+		operations.clear()
+		return criteria
 	}
 }
