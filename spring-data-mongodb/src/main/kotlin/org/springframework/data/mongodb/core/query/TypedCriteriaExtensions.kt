@@ -34,31 +34,22 @@ class TypedCriteria(
 }
 
 fun typedCriteria(vararg typedCriteria: TypedCriteria): CriteriaDefinition {
-	return chainCriteria(Criteria(), typedCriteria.toList())
+	return typedCriteria.fold(Criteria()) { chain, head -> head.operation(chain.and(head.name))}
 }
 
-private fun chainCriteria(criteria: Criteria, tail: Collection<TypedCriteria>): Criteria {
-	if (tail.isEmpty()) {
-		return criteria
-	}
-	val head = tail.first()
-	head.operation(criteria.and(head.name))
-	return chainCriteria(criteria, tail.drop(1))
-}
+infix fun <T> KProperty<T>.isEqualTo(value: T) = buildCriteria { isEqualTo(value) }
+infix fun <T> KProperty<T>.ne(value: T) = buildCriteria { ne(value) }
+infix fun <T> KProperty<T>.lt(value: T) = buildCriteria { lt(value) }
+infix fun <T> KProperty<T>.lte(value: T) = buildCriteria { lte(value) }
+infix fun <T> KProperty<T>.gt(value: T) = buildCriteria { gt(value) }
+infix fun <T> KProperty<T>.gte(value: T) = buildCriteria { gte(value) }
+infix fun <T> KProperty<T>.inValues(value: Collection<T>) = buildCriteria { `in`(value) }
+fun <T> KProperty<T>.inValues(vararg o: Any) = buildCriteria { `in`(*o) }
+infix fun <T> KProperty<T>.nin(value: Collection<T>) = buildCriteria { nin(value) }
+fun <T> KProperty<T>.nin(vararg o: Any) = buildCriteria { nin(*o) }
+fun KProperty<Number>.mod(value: Number, remainder: Number) = buildCriteria { mod(value, remainder) }
+infix fun <T : Collection<*>> KProperty<T>.all(value: T) = buildCriteria { all(value) }
+fun <T> KProperty<T>.all(vararg o: Any) = buildCriteria { all(*o) }
+infix fun KProperty<Collection<*>>.size(s: Int) = buildCriteria { size(s) }
 
-infix fun <T> KProperty<T>.isEqualTo(value: T) = filter { isEqualTo(value) }
-infix fun <T> KProperty<T>.ne(value: T) = filter { ne(value) }
-infix fun <T> KProperty<T>.lt(value: T) = filter { lt(value) }
-infix fun <T> KProperty<T>.lte(value: T) = filter { lte(value) }
-infix fun <T> KProperty<T>.gt(value: T) = filter { gt(value) }
-infix fun <T> KProperty<T>.gte(value: T) = filter { gte(value) }
-infix fun <T> KProperty<T>.inValues(value: Collection<T>) = filter { `in`(value) }
-fun <T> KProperty<T>.inValues(vararg o: Any) = filter { `in`(*o) }
-infix fun <T> KProperty<T>.nin(value: Collection<T>) = filter { nin(value) }
-fun <T> KProperty<T>.nin(vararg o: Any) = filter { nin(*o) }
-fun KProperty<Number>.mod(value: Number, remainder: Number) = filter { mod(value, remainder) }
-infix fun <T : Collection<*>> KProperty<T>.all(value: T) = filter { all(value) }
-fun <T> KProperty<T>.all(vararg o: Any) = filter { all(*o) }
-fun KProperty<Collection<*>>.size(s: Int) = filter { size(s) }
-
-private fun <T> KProperty<T>.filter(operation: Criteria.() -> Criteria) = TypedCriteria(this, operation)
+private fun <T> KProperty<T>.buildCriteria(operation: Criteria.() -> Criteria) = TypedCriteria(this, operation)

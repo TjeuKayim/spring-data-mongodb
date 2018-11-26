@@ -122,14 +122,14 @@ class TypedCriteriaExtensionsTest {
 
 	@Test
 	fun `Typed criteria all list`() {
-		val typed = Book::authors.all(listOf(1, 2, 3))
+		val typed = Book::authors all listOf(1, 2, 3)
 		val classic = Criteria("authors").all(listOf(1, 2, 3))
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria size`() {
-		val typed = Book::authors.size(4)
+		val typed = Book::authors size 4
 		val classic = Criteria("authors").size(4)
 		assertCriteriaEquals(classic, typed)
 	}
