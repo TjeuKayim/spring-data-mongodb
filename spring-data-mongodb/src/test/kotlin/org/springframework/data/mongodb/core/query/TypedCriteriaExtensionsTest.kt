@@ -38,103 +38,121 @@ class TypedCriteriaExtensionsTest {
 
 	@Test
 	fun `Typed criteria isEqualTo`() {
-		val typed = typedCriteria {Book::name isEqualTo "Moby-Dick"}
+		val typed = typedCriteria { Book::name isEqualTo "Moby-Dick" }
 		val classic = Criteria("name").isEqualTo("Moby-Dick")
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria ne`() {
-		val typed = typedCriteria {Book::name ne "Moby-Dick"}
+		val typed = typedCriteria { Book::name ne "Moby-Dick" }
 		val classic = Criteria("name").ne("Moby-Dick")
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria lt`() {
-		val typed = typedCriteria {Book::price lt 100}
+		val typed = typedCriteria { Book::price lt 100 }
 		val classic = Criteria("price").lt(100)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria lte`() {
-		val typed = typedCriteria {Book::price lte 100}
+		val typed = typedCriteria { Book::price lte 100 }
 		val classic = Criteria("price").lte(100)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria gt`() {
-		val typed = typedCriteria {Book::price gt 100}
+		val typed = typedCriteria { Book::price gt 100 }
 		val classic = Criteria("price").gt(100)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria gte`() {
-		val typed = typedCriteria {Book::price gte 100}
+		val typed = typedCriteria { Book::price gte 100 }
 		val classic = Criteria("price").gte(100)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria inValues`() {
-		val typed = typedCriteria {Book::price.inValues(1, 2, 3)}
+		val typed = typedCriteria { Book::price.inValues(1, 2, 3) }
 		val classic = Criteria("price").inValues(1, 2, 3)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria inValues list`() {
-		val typed = typedCriteria {Book::price inValues listOf(1, 2, 3)}
+		val typed = typedCriteria { Book::price inValues listOf(1, 2, 3) }
 		val classic = Criteria("price").inValues(listOf(1, 2, 3))
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria nin`() {
-		val typed = typedCriteria {Book::price.nin(1, 2, 3)}
+		val typed = typedCriteria { Book::price.nin(1, 2, 3) }
 		val classic = Criteria("price").nin(1, 2, 3)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria nin list`() {
-		val typed = typedCriteria {Book::price nin listOf(1, 2, 3)}
+		val typed = typedCriteria { Book::price nin listOf(1, 2, 3) }
 		val classic = Criteria("price").nin(listOf(1, 2, 3))
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria mod`() {
-		val typed = typedCriteria {Book::price.mod(2, 3)}
+		val typed = typedCriteria { Book::price.mod(2, 3) }
 		val classic = Criteria("price").mod(2, 3)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria all`() {
-		val typed = typedCriteria {Book::authors.all(1, 2, 3)}
+		val typed = typedCriteria { Book::authors.all(1, 2, 3) }
 		val classic = Criteria("authors").all(1, 2, 3)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria all list`() {
-		val typed = typedCriteria {Book::authors all listOf(1, 2, 3)}
+		val typed = typedCriteria { Book::authors all listOf(1, 2, 3) }
 		val classic = Criteria("authors").all(listOf(1, 2, 3))
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria size`() {
-		val typed = typedCriteria {Book::authors size 4}
+		val typed = typedCriteria { Book::authors size 4 }
 		val classic = Criteria("authors").size(4)
 		assertCriteriaEquals(classic, typed)
 	}
 
+	@Test
+	fun `Typed criteria or operator`() {
+		val typed = typedCriteria {
+			Book::name isEqualTo "Moby-Dick"
+			or {
+				Book::price lt 1200
+				Book::price gt 240
+			}
+		}
+		val classic = Criteria("name").isEqualTo("Moby-Dick")
+			.orOperator(
+				Criteria("price").lt(1200),
+				Criteria("price").gt(240)
+			)
+		assertCriteriaEquals(classic, typed)
+	}
+
 	private fun assertCriteriaEquals(expected: CriteriaDefinition, actual: CriteriaDefinition) {
+//		println(actual.criteriaObject)
 		assertEquals(expected.criteriaObject, actual.criteriaObject)
 	}
 }
