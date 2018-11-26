@@ -32,16 +32,16 @@ class TypedQueryExtensionsTest {
 				.and("available").isEqualTo(true)
 		)
 
-		val typed = typedQuery(
-			Book::price gt 1100,
+		val typed = typedQuery {
+			Book::price gt 1100
 			Book::available isEqualTo true
-		)
+		}
 
 		assertEquals(classic.queryObject, typed.queryObject)
 	}
 
 	@Test
 	fun `Typed Query`() {
-		typedQuery(Book::name lte 123)
+		typedQuery { Book::name lte 123 }
 	}
 }

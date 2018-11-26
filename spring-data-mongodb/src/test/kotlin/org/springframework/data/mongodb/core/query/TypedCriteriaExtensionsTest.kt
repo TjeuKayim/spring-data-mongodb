@@ -27,10 +27,10 @@ import org.springframework.data.mongodb.core.mapping.Document
 class TypedCriteriaExtensionsTest {
 	@Test
 	fun `Typed query gt and isEqualTo`() {
-		val typed = typedCriteria(
-			Book::price gt 1100,
+		val typed = typedCriteria {
+			Book::price gt 1100
 			Book::available isEqualTo true
-		)
+		}
 		val classic = Criteria("price").gt(1100)
 			.and("available").isEqualTo(true)
 		assertCriteriaEquals(classic, typed)
@@ -38,98 +38,98 @@ class TypedCriteriaExtensionsTest {
 
 	@Test
 	fun `Typed criteria isEqualTo`() {
-		val typed = Book::name isEqualTo "Moby-Dick"
+		val typed = typedCriteria {Book::name isEqualTo "Moby-Dick"}
 		val classic = Criteria("name").isEqualTo("Moby-Dick")
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria ne`() {
-		val typed = Book::name ne "Moby-Dick"
+		val typed = typedCriteria {Book::name ne "Moby-Dick"}
 		val classic = Criteria("name").ne("Moby-Dick")
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria lt`() {
-		val typed = Book::price lt 100
+		val typed = typedCriteria {Book::price lt 100}
 		val classic = Criteria("price").lt(100)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria lte`() {
-		val typed = Book::price lte 100
+		val typed = typedCriteria {Book::price lte 100}
 		val classic = Criteria("price").lte(100)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria gt`() {
-		val typed = Book::price gt 100
+		val typed = typedCriteria {Book::price gt 100}
 		val classic = Criteria("price").gt(100)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria gte`() {
-		val typed = Book::price gte 100
+		val typed = typedCriteria {Book::price gte 100}
 		val classic = Criteria("price").gte(100)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria inValues`() {
-		val typed = Book::price.inValues(1, 2, 3)
+		val typed = typedCriteria {Book::price.inValues(1, 2, 3)}
 		val classic = Criteria("price").inValues(1, 2, 3)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria inValues list`() {
-		val typed = Book::price inValues listOf(1, 2, 3)
+		val typed = typedCriteria {Book::price inValues listOf(1, 2, 3)}
 		val classic = Criteria("price").inValues(listOf(1, 2, 3))
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria nin`() {
-		val typed = Book::price.nin(1, 2, 3)
+		val typed = typedCriteria {Book::price.nin(1, 2, 3)}
 		val classic = Criteria("price").nin(1, 2, 3)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria nin list`() {
-		val typed = Book::price nin listOf(1, 2, 3)
+		val typed = typedCriteria {Book::price nin listOf(1, 2, 3)}
 		val classic = Criteria("price").nin(listOf(1, 2, 3))
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria mod`() {
-		val typed = Book::price.mod(2, 3)
+		val typed = typedCriteria {Book::price.mod(2, 3)}
 		val classic = Criteria("price").mod(2, 3)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria all`() {
-		val typed = Book::authors.all(1, 2, 3)
+		val typed = typedCriteria {Book::authors.all(1, 2, 3)}
 		val classic = Criteria("authors").all(1, 2, 3)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria all list`() {
-		val typed = Book::authors all listOf(1, 2, 3)
+		val typed = typedCriteria {Book::authors all listOf(1, 2, 3)}
 		val classic = Criteria("authors").all(listOf(1, 2, 3))
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria size`() {
-		val typed = Book::authors size 4
+		val typed = typedCriteria {Book::authors size 4}
 		val classic = Criteria("authors").size(4)
 		assertCriteriaEquals(classic, typed)
 	}
