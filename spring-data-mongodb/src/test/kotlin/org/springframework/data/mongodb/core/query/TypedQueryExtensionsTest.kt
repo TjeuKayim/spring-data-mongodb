@@ -39,4 +39,9 @@ class TypedQueryExtensionsTest {
 
 		assertEquals(classic.queryObject, typed.queryObject)
 	}
+
+	@Test
+	fun `Typed Query`() {
+		typedQuery(Book::name lte 123)
+	}
 }
