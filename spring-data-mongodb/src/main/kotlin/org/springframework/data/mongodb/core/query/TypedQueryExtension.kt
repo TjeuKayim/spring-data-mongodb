@@ -19,6 +19,6 @@ package org.springframework.data.mongodb.core.query
  * Create a new Query with one or more TypedCriteria.
  * @author Tjeu Kayim
  */
-fun typedQuery(vararg criteria: TypedCriteria): Query {
-	return Query(typedCriteria(*criteria))
+fun typedQuery(criteria: TypedCriteriaBuilder.() -> Unit): Query {
+	return Query(typedCriteria(criteria))
 }
