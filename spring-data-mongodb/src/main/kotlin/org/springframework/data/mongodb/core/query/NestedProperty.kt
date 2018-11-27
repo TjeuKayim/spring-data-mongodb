@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.data.mongodb.core.query
 
+import kotlin.reflect.KProperty
+import kotlin.reflect.KProperty1
+
 /**
- * Create a new Query.
- *
- * @see typedCriteria
- * @author Tjeu Kayim
+ * Nested property to generate MongoDB field name.
  */
-fun typedQuery(operations: TypedOperations): Query {
-	return Query(typedCriteria(operations))
+class NestedProperty<T, U>(
+	val parent: KProperty<T>,
+	val child: KProperty1<T, U>
+) : KProperty<U> by child
+
+fun nestedFieldName(property: KProperty<*>): String {
+	return when (property) {
+		is NestedProperty<*, *> ->
+			"${nestedFieldName(property.parent)}.${property.child.name}"
+		else -> property.name
+	}
 }

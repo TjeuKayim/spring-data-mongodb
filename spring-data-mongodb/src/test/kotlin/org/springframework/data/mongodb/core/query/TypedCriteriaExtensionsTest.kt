@@ -33,6 +33,23 @@ import java.util.regex.Pattern
  * @author Tjeu Kayim
  */
 class TypedCriteriaExtensionsTest {
+
+	@Test
+	fun `Call typedQuery with two TypedCriteria`() {
+		val classic = Query(
+			Criteria()
+				.and("price").gt(1100)
+				.and("available").isEqualTo(true)
+		)
+
+		val typed = typedQuery {
+			Book::price gt 1100
+			Book::available isEqualTo true
+		}
+
+		assertEquals(classic.queryObject, typed.queryObject)
+	}
+
 	@Test
 	fun `Typed query gt and isEqualTo`() {
 		val typed = typedCriteria {
@@ -366,15 +383,10 @@ class TypedCriteriaExtensionsTest {
 			Entity::book / Book::author / Author::name isEqualTo "Herman Melville"
 		}
 		val classic = Criteria("book.author.name").isEqualTo("Herman Melville")
-		printJson(typed)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	private fun assertCriteriaEquals(expected: Criteria, actual: Criteria) {
 		assertEquals(expected, actual)
-	}
-
-	private fun printJson(criteria: Criteria) {
-		println(criteria.criteriaObject.toJson())
 	}
 }
