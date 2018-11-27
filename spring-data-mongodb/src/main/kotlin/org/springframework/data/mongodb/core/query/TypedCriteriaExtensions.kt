@@ -41,7 +41,8 @@ class TypedOperation(
 
 	private fun nestedFieldName(property: KProperty<*>): String {
 		return when (property) {
-			is NestedProperty<*, *> -> "${nestedFieldName(property.parent)}.${property.child.name}"
+			is NestedProperty<*, *> ->
+				"${nestedFieldName(property.parent)}.${property.child.name}"
 			else -> property.name
 		}
 	}
@@ -57,7 +58,7 @@ class TypedOperation(
  */
 fun typedCriteria(operations: TypedOperations): Criteria {
 	val builder = TypedCriteriaBuilder().apply(operations)
-	return builder.build()
+	return builder.chainCriteria()
 }
 
 /**
@@ -70,63 +71,74 @@ class TypedCriteriaBuilder {
 	private var criteria = Criteria()
 	private val operations = mutableListOf<TypedOperation>()
 
-	infix fun <T> KProperty<T>.isEqualTo(value: T) = buildCriteria { isEqualTo(value) }
-	infix fun <T> KProperty<T>.ne(value: T) = buildCriteria { ne(value) }
-	infix fun <T> KProperty<T>.lt(value: T) = buildCriteria { lt(value) }
-	infix fun <T> KProperty<T>.lte(value: T) = buildCriteria { lte(value) }
-	infix fun <T> KProperty<T>.gt(value: T) = buildCriteria { gt(value) }
-	infix fun <T> KProperty<T>.gte(value: T) = buildCriteria { gte(value) }
-	infix fun <T> KProperty<T>.inValues(value: Collection<T>) = buildCriteria { `in`(value) }
-	fun <T> KProperty<T>.inValues(vararg o: Any) = buildCriteria { `in`(*o) }
-	infix fun <T> KProperty<T>.nin(value: Collection<T>) = buildCriteria { nin(value) }
-	fun <T> KProperty<T>.nin(vararg o: Any) = buildCriteria { nin(*o) }
-	fun KProperty<Number>.mod(value: Number, remainder: Number) = buildCriteria { mod(value, remainder) }
-	infix fun KProperty<*>.all(value: Collection<*>) = buildCriteria { all(value) }
-	fun KProperty<*>.all(vararg o: Any) = buildCriteria { all(*o) }
-	infix fun KProperty<*>.size(s: Int) = buildCriteria { size(s) }
-	infix fun KProperty<*>.exists(b: Boolean) = buildCriteria { exists(b) }
-	infix fun KProperty<*>.type(t: Int) = buildCriteria { type(t) }
-	infix fun KProperty<*>.type(t: Array<Type>) = buildCriteria { type(*t) }
-	fun KProperty<*>.not() = buildCriteria { not() }
-	infix fun KProperty<*>.regex(re: String) = buildCriteria { regex(re, null) }
-	fun KProperty<*>.regex(re: String, options: String?) = buildCriteria { regex(re, options) }
-	infix fun KProperty<*>.regex(re: Regex) = buildCriteria { regex(re.toPattern()) }
-	infix fun KProperty<*>.regex(re: Pattern) = buildCriteria { regex(re) }
-	infix fun KProperty<*>.regex(re: BsonRegularExpression) = buildCriteria { regex(re) }
-	infix fun KProperty<*>.withinSphere(circle: Circle) = buildCriteria { withinSphere(circle) }
-	infix fun KProperty<*>.within(shape: Shape) = buildCriteria { within(shape) }
-	infix fun KProperty<*>.near(point: Point) = buildCriteria { near(point) }
-	infix fun KProperty<*>.nearSphere(point: Point) = buildCriteria { nearSphere(point) }
-	infix fun KProperty<*>.intersects(geoJson: GeoJson<*>) = buildCriteria { intersects(geoJson) }
-	infix fun KProperty<*>.maxDistance(d: Double) = buildCriteria { maxDistance(d) }
-	infix fun KProperty<*>.minDistance(d: Double) = buildCriteria { minDistance(d) }
-	infix fun KProperty<*>.elemMatch(c: Criteria) = buildCriteria { elemMatch(c) }
-	infix fun KProperty<*>.elemMatch(c: TypedOperations) = buildCriteria { elemMatch(typedCriteria(c)) }
+	infix fun <T> KProperty<T>.isEqualTo(value: T) = addOperation { isEqualTo(value) }
+	infix fun <T> KProperty<T>.ne(value: T) = addOperation { ne(value) }
+	infix fun <T> KProperty<T>.lt(value: T) = addOperation { lt(value) }
+	infix fun <T> KProperty<T>.lte(value: T) = addOperation { lte(value) }
+	infix fun <T> KProperty<T>.gt(value: T) = addOperation { gt(value) }
+	infix fun <T> KProperty<T>.gte(value: T) = addOperation { gte(value) }
+	infix fun <T> KProperty<T>.inValues(value: Collection<T>) = addOperation { `in`(value) }
+	fun <T> KProperty<T>.inValues(vararg o: Any) = addOperation { `in`(*o) }
+	infix fun <T> KProperty<T>.nin(value: Collection<T>) = addOperation { nin(value) }
+	fun <T> KProperty<T>.nin(vararg o: Any) = addOperation { nin(*o) }
+	fun KProperty<Number>.mod(value: Number, remainder: Number) = addOperation { mod(value, remainder) }
+	infix fun KProperty<*>.all(value: Collection<*>) = addOperation { all(value) }
+	fun KProperty<*>.all(vararg o: Any) = addOperation { all(*o) }
+	infix fun KProperty<*>.size(s: Int) = addOperation { size(s) }
+	infix fun KProperty<*>.exists(b: Boolean) = addOperation { exists(b) }
+	infix fun KProperty<*>.type(t: Int) = addOperation { type(t) }
+	infix fun KProperty<*>.type(t: Array<Type>) = addOperation { type(*t) }
+	fun KProperty<*>.not() = addOperation { not() }
+	infix fun KProperty<*>.regex(re: String) = addOperation { regex(re, null) }
+	fun KProperty<*>.regex(re: String, options: String?) = addOperation { regex(re, options) }
+	infix fun KProperty<*>.regex(re: Regex) = addOperation { regex(re.toPattern()) }
+	infix fun KProperty<*>.regex(re: Pattern) = addOperation { regex(re) }
+	infix fun KProperty<*>.regex(re: BsonRegularExpression) = addOperation { regex(re) }
+	infix fun KProperty<*>.withinSphere(circle: Circle) = addOperation { withinSphere(circle) }
+	infix fun KProperty<*>.within(shape: Shape) = addOperation { within(shape) }
+	infix fun KProperty<*>.near(point: Point) = addOperation { near(point) }
+	infix fun KProperty<*>.nearSphere(point: Point) = addOperation { nearSphere(point) }
+	infix fun KProperty<*>.intersects(geoJson: GeoJson<*>) = addOperation { intersects(geoJson) }
+	infix fun KProperty<*>.maxDistance(d: Double) = addOperation { maxDistance(d) }
+	infix fun KProperty<*>.minDistance(d: Double) = addOperation { minDistance(d) }
+	infix fun KProperty<*>.elemMatch(c: Criteria) = addOperation { elemMatch(c) }
+	infix fun KProperty<*>.elemMatch(c: TypedOperations) = addOperation { elemMatch(typedCriteria(c)) }
+
+	private fun <T> KProperty<T>.addOperation(operation: Criteria.() -> Criteria): TypedOperation {
+		val typedOperation = TypedOperation(this, operation)
+		operations.add(typedOperation)
+		return typedOperation
+	}
 
 	/**
 	 * Creates an 'or' criteria using the $or operator.
 	 */
-	fun or(other: TypedCriteriaBuilder.() -> Unit) {
-		build()
-		criteria.orOperator(*TypedCriteriaBuilder().apply(other).operations.map { it.criteria }.toTypedArray())
-	}
-
-	operator fun <T, U> KProperty<T>.div(other: KProperty1<T, U>) =
-		NestedProperty(this, other)
-
-	private fun <T> KProperty<T>.buildCriteria(operation: Criteria.() -> Criteria): TypedOperation {
-		val typedCriteria = TypedOperation(this, operation)
-		operations.add(typedCriteria)
-		return typedCriteria
+	fun or(builder: TypedCriteriaBuilder.() -> Unit) {
+		chainCriteria()
+		val otherCriteria = TypedCriteriaBuilder().apply(builder).listCriteria()
+		criteria.orOperator(*otherCriteria.toTypedArray())
 	}
 
 	/**
-	 * Apply all operations to criteria.
+	 * Build nested properties.
 	 */
-	internal fun build(): Criteria {
+	operator fun <T, U> KProperty<T>.div(other: KProperty1<T, U>) =
+		NestedProperty(this, other)
+
+	/**
+	 * Apply all operations to one criteria.
+	 */
+	internal fun chainCriteria(): Criteria {
 		criteria = operations.fold(criteria) { chain, head -> head.operation(chain.and(head.name)) }
 		operations.clear()
 		return criteria
+	}
+
+	/**
+	 * Map each operation to a criteria.
+	 */
+	private fun listCriteria(): List<Criteria> {
+		return operations.map { it.criteria }
 	}
 }
 
