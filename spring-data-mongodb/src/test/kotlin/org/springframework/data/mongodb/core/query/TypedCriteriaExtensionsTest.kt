@@ -16,10 +16,16 @@
 
 package org.springframework.data.mongodb.core.query
 
-import org.bson.types.ObjectId
+import example.Author
+import example.Book
+import org.bson.BsonRegularExpression
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.data.geo.Circle
+import org.springframework.data.geo.Point
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint
+import org.springframework.data.mongodb.core.schema.JsonSchemaObject.Type
+import java.util.regex.Pattern
 
 /**
  * @author Tjeu Kayim
@@ -28,11 +34,11 @@ class TypedCriteriaExtensionsTest {
 	@Test
 	fun `Typed query gt and isEqualTo`() {
 		val typed = typedCriteria {
-			Book::price gt 1100
-			Book::available isEqualTo true
+			Book::name isEqualTo "Moby-Dick"
+			Book::price lt 950
 		}
-		val classic = Criteria("price").gt(1100)
-			.and("available").isEqualTo(true)
+		val classic = Criteria("name").isEqualTo("Moby-Dick")
+			.and("price").lt(950)
 		assertCriteriaEquals(classic, typed)
 	}
 
@@ -115,24 +121,158 @@ class TypedCriteriaExtensionsTest {
 
 	@Test
 	fun `Typed criteria all`() {
-		val typed = typedCriteria { Book::authors.all(1, 2, 3) }
-		val classic = Criteria("authors").all(1, 2, 3)
+		val typed = typedCriteria { Book::categories.all(1, 2, 3) }
+		val classic = Criteria("categories").all(1, 2, 3)
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria all list`() {
-		val typed = typedCriteria { Book::authors all listOf(1, 2, 3) }
-		val classic = Criteria("authors").all(listOf(1, 2, 3))
+		val typed = typedCriteria { Book::categories all listOf(1, 2, 3) }
+		val classic = Criteria("categories").all(listOf(1, 2, 3))
 		assertCriteriaEquals(classic, typed)
 	}
 
 	@Test
 	fun `Typed criteria size`() {
-		val typed = typedCriteria { Book::authors size 4 }
-		val classic = Criteria("authors").size(4)
+		val typed = typedCriteria { Book::categories size 4 }
+		val classic = Criteria("categories").size(4)
 		assertCriteriaEquals(classic, typed)
 	}
+
+	@Test
+	fun `Typed criteria exists`() {
+		val typed = typedCriteria { Book::name exists true }
+		val classic = Criteria("name").exists(true)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria type int`() {
+		val typed = typedCriteria { Book::name type 2 }
+		val classic = Criteria("name").type(2)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria type array`() {
+		val typed = typedCriteria { Book::name type arrayOf(Type.STRING, Type.BOOLEAN) }
+		val classic = Criteria("name").type(Type.STRING, Type.BOOLEAN)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria not`() {
+		val typed = typedCriteria { Book::name.not() }
+		val classic = Criteria("name").not()
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria regex string`() {
+		val typed = typedCriteria { Book::name regex "ab+c" }
+		val classic = Criteria("name").regex("ab+c")
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria regex string options`() {
+		val typed = typedCriteria { Book::name.regex("ab+c", "g") }
+		val classic = Criteria("name").regex("ab+c", "g")
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria regex Regex`() {
+		val typed = typedCriteria { Book::name regex Regex("ab+c") }
+		val classic = Criteria("name").regex(Pattern.compile("ab+c"))
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria regex Pattern`() {
+		val typed = typedCriteria { Book::name regex Pattern.compile("ab+c") }
+		val classic = Criteria("name").regex(Pattern.compile("ab+c"))
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria regex BsonRegularExpression`() {
+		val expression = BsonRegularExpression("ab+c")
+		val typed = typedCriteria { Book::name regex expression }
+		val classic = Criteria("name").regex(expression)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria withinSphere`() {
+		val value = Circle(Point(1.0, 2.0), 3.0)
+		val typed = typedCriteria { Book::name withinSphere value }
+		val classic = Criteria("name").withinSphere(value)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria within`() {
+		val value = Circle(Point(1.0, 2.0), 3.0)
+		val typed = typedCriteria { Book::name within value }
+		val classic = Criteria("name").within(value)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria near`() {
+		val value = Point(1.0, 2.0)
+		val typed = typedCriteria { Book::name near value }
+		val classic = Criteria("name").near(value)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria nearSphere`() {
+		val value = Point(1.0, 2.0)
+		val typed = typedCriteria { Book::name nearSphere value }
+		val classic = Criteria("name").nearSphere(value)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria intersects`() {
+		val value = GeoJsonPoint(1.0, 2.0)
+		val typed = typedCriteria { Book::name intersects value }
+		val classic = Criteria("name").intersects(value)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria maxDistance`() {
+		val typed = typedCriteria { Book::name maxDistance 3.0 }
+		val classic = Criteria("name").maxDistance(3.0)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria minDistance`() {
+		val typed = typedCriteria { Book::name minDistance 3.0 }
+		val classic = Criteria("name").minDistance(3.0)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria elemMatch`() {
+		val value = Criteria("price").lt(950)
+		val typed = typedCriteria { Book::name elemMatch value }
+		val classic = Criteria("name").elemMatch(value)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria elemMatch typedCriteria`() {
+		val typed = typedCriteria { Book::name elemMatch { Book::price lt 950 } }
+		val classic = Criteria("name").elemMatch(Criteria("price").lt(950))
+		assertCriteriaEquals(classic, typed)
+	}
+
 
 	@Test
 	fun `Typed criteria or operator`() {
@@ -151,24 +291,16 @@ class TypedCriteriaExtensionsTest {
 		assertCriteriaEquals(classic, typed)
 	}
 
-	private fun assertCriteriaEquals(expected: CriteriaDefinition, actual: CriteriaDefinition) {
-//		println(actual.criteriaObject)
-		assertEquals(expected.criteriaObject, actual.criteriaObject)
+	@Test
+	fun `Typed criteria nest one level`() {
+		val typed = typedCriteria {
+			Book::author nest Author::name isEqualTo "Herman Melville"
+		}
+		val classic = Criteria("author.name").isEqualTo("Herman Melville")
+		assertCriteriaEquals(classic, typed)
+	}
+
+	private fun assertCriteriaEquals(expected: Criteria, actual: Criteria) {
+		assertEquals(expected, actual)
 	}
 }
-
-@Document("books")
-data class Book(
-	val id: ObjectId,
-	val name: String,
-	val price: Int,
-	val available: Boolean,
-	val authors: List<Author>
-)
-
-data class Author(
-	val id: ObjectId,
-	val name: String,
-	val price: Int,
-	val available: Boolean
-)

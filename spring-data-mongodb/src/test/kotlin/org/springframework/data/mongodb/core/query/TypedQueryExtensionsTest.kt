@@ -16,6 +16,7 @@
 
 package org.springframework.data.mongodb.core.query
 
+import example.Book
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

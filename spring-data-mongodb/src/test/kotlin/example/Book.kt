@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.mongodb.core.query
 
-/**
- * Create a new Query.
- *
- * @see typedCriteria
- * @author Tjeu Kayim
- */
-fun typedQuery(operations: TypedOperations): Query {
-	return Query(typedCriteria(operations))
-}
+package example
+
+import org.bson.types.ObjectId
+import org.junit.experimental.categories.Categories
+import org.springframework.data.mongodb.core.mapping.Document
+
+@Document("books")
+data class Book(
+	val id: ObjectId,
+	val name: String,
+	val price: Int,
+	val available: Boolean,
+	val categories: List<String>,
+	val author: Author
+)
+
+data class Author(
+	val id: ObjectId,
+	val name: String
+)
