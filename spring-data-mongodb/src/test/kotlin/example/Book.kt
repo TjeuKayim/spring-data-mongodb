@@ -17,7 +17,6 @@
 package example
 
 import org.bson.types.ObjectId
-import org.junit.experimental.categories.Categories
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document("books")
