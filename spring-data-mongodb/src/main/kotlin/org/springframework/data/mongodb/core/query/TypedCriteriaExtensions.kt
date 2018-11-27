@@ -36,11 +36,15 @@ class TypedOperation(
 	property: KProperty<Any?>,
 	val operation: Criteria.() -> Criteria
 ) {
-	val name = when(property) {
-		is NestedProperty<*, *> -> "${property.parent.name}.${property.child.name}"
-		else -> property.name
-	}
+	val name = nestedFieldName(property)
 	val criteria by lazy { Criteria(name).operation() }
+
+	private fun nestedFieldName(property: KProperty<*>): String {
+		return when (property) {
+			is NestedProperty<*, *> -> "${nestedFieldName(property.parent)}.${property.child.name}"
+			else -> property.name
+		}
+	}
 }
 
 /**
@@ -107,7 +111,7 @@ class TypedCriteriaBuilder {
 		criteria.orOperator(*TypedCriteriaBuilder().apply(other).operations.map { it.criteria }.toTypedArray())
 	}
 
-	infix fun <T, U> KProperty<T>.nest(other: KProperty1<T, U>) =
+	operator fun <T, U> KProperty<T>.div(other: KProperty1<T, U>) =
 		NestedProperty(this, other)
 
 	private fun <T> KProperty<T>.buildCriteria(operation: Criteria.() -> Criteria): TypedOperation {

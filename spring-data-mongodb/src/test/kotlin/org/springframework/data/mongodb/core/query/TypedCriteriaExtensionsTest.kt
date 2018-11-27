@@ -294,13 +294,29 @@ class TypedCriteriaExtensionsTest {
 	@Test
 	fun `Typed criteria nest one level`() {
 		val typed = typedCriteria {
-			Book::author nest Author::name isEqualTo "Herman Melville"
+			Book::author / Author::name isEqualTo "Herman Melville"
 		}
 		val classic = Criteria("author.name").isEqualTo("Herman Melville")
 		assertCriteriaEquals(classic, typed)
 	}
 
+	@Test
+	fun `Typed criteria nest two levels`() {
+		data class Entity(val book: Book)
+
+		val typed = typedCriteria {
+			Entity::book / Book::author / Author::name isEqualTo "Herman Melville"
+		}
+		val classic = Criteria("book.author.name").isEqualTo("Herman Melville")
+		printJson(typed)
+		assertCriteriaEquals(classic, typed)
+	}
+
 	private fun assertCriteriaEquals(expected: Criteria, actual: Criteria) {
 		assertEquals(expected, actual)
+	}
+
+	private fun printJson(criteria: Criteria) {
+		println(criteria.criteriaObject.toJson())
 	}
 }
