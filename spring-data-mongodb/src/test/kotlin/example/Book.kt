@@ -21,15 +21,15 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document("books")
 data class Book(
-	val id: ObjectId,
-	val name: String,
-	val price: Int,
-	val available: Boolean,
-	val categories: List<String>,
-	val author: Author
+	val name: String = "Moby-Dick",
+	val price: Int = 123,
+	val available: Boolean = true,
+	val categories: List<String> = emptyList(),
+	val author: Author = Author("Herman Melville"),
+	val id: ObjectId? = null
 )
 
 data class Author(
-	val id: ObjectId,
-	val name: String
+	val name: String,
+	val id: ObjectId? = null
 )

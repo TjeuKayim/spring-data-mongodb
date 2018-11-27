@@ -17,36 +17,19 @@ package org.springframework.data.mongodb.core.query
 
 import org.bson.BsonRegularExpression
 import org.bson.types.ObjectId
+import org.springframework.data.domain.Example
 import org.springframework.data.geo.Circle
 import org.springframework.data.geo.Point
 import org.springframework.data.geo.Shape
 import org.springframework.data.mongodb.core.geo.GeoJson
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.schema.JsonSchemaObject.Type
+import org.springframework.data.mongodb.core.schema.MongoJsonSchema
 import java.util.regex.Pattern
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
 
 typealias TypedOperations = TypedCriteriaBuilder.() -> Unit
-
-/**
- * @author Tjeu Kayim
- */
-class TypedOperation(
-	property: KProperty<Any?>,
-	val operation: Criteria.() -> Criteria
-) {
-	val name = nestedFieldName(property)
-	val criteria by lazy { Criteria(name).operation() }
-
-	private fun nestedFieldName(property: KProperty<*>): String {
-		return when (property) {
-			is NestedProperty<*, *> ->
-				"${nestedFieldName(property.parent)}.${property.child.name}"
-			else -> property.name
-		}
-	}
-}
 
 /**
  * Typed criteria builder.
@@ -103,6 +86,13 @@ class TypedCriteriaBuilder {
 	infix fun KProperty<*>.minDistance(d: Double) = addOperation { minDistance(d) }
 	infix fun KProperty<*>.elemMatch(c: Criteria) = addOperation { elemMatch(c) }
 	infix fun KProperty<*>.elemMatch(c: TypedOperations) = addOperation { elemMatch(typedCriteria(c)) }
+	infix fun KProperty<*>.alike(sample: Example<*>) = addOperation { alike(sample) }
+	infix fun KProperty<*>.andDocumentStructureMatches(schema: MongoJsonSchema) =
+		addOperation { andDocumentStructureMatches(schema) }
+
+	infix fun KProperty<*>.bits(bitwiseCriteria: Criteria.BitwiseCriteriaOperators.() -> Criteria) =
+		addOperation { bits().let(bitwiseCriteria) }
+
 
 	private fun <T> KProperty<T>.addOperation(operation: Criteria.() -> Criteria): TypedOperation {
 		val typedOperation = TypedOperation(this, operation)
@@ -110,13 +100,14 @@ class TypedCriteriaBuilder {
 		return typedOperation
 	}
 
-	/**
-	 * Creates an 'or' criteria using the $or operator.
-	 */
-	fun or(builder: TypedCriteriaBuilder.() -> Unit) {
-		chainCriteria()
+	fun or(builder: TypedOperations) = addOperatorWithCriteria(builder, Criteria::orOperator)
+	fun nor(builder: TypedOperations) = addOperatorWithCriteria(builder, Criteria::norOperator)
+	fun and(builder: TypedOperations) = addOperatorWithCriteria(builder, Criteria::andOperator)
+
+	private fun addOperatorWithCriteria(builder: TypedOperations, operation: Criteria.(Array<Criteria>) -> Criteria) {
 		val otherCriteria = TypedCriteriaBuilder().apply(builder).listCriteria()
-		criteria.orOperator(*otherCriteria.toTypedArray())
+		chainCriteria()
+		criteria.operation(otherCriteria.toTypedArray())
 	}
 
 	/**
@@ -139,6 +130,25 @@ class TypedCriteriaBuilder {
 	 */
 	private fun listCriteria(): List<Criteria> {
 		return operations.map { it.criteria }
+	}
+}
+
+/**
+ * @author Tjeu Kayim
+ */
+class TypedOperation(
+	property: KProperty<Any?>,
+	val operation: Criteria.() -> Criteria
+) {
+	val name = nestedFieldName(property)
+	val criteria by lazy { Criteria(name).operation() }
+
+	private fun nestedFieldName(property: KProperty<*>): String {
+		return when (property) {
+			is NestedProperty<*, *> ->
+				"${nestedFieldName(property.parent)}.${property.child.name}"
+			else -> property.name
+		}
 	}
 }
 

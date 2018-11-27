@@ -21,10 +21,12 @@ import example.Book
 import org.bson.BsonRegularExpression
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.springframework.data.domain.Example
 import org.springframework.data.geo.Circle
 import org.springframework.data.geo.Point
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint
 import org.springframework.data.mongodb.core.schema.JsonSchemaObject.Type
+import org.springframework.data.mongodb.core.schema.MongoJsonSchema
 import java.util.regex.Pattern
 
 /**
@@ -273,6 +275,28 @@ class TypedCriteriaExtensionsTest {
 		assertCriteriaEquals(classic, typed)
 	}
 
+	@Test
+	fun `Typed criteria alike`() {
+		val value = Example.of(Book())
+		val typed = typedCriteria { Book::name alike value }
+		val classic = Criteria("name").alike(value)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria andDocumentStructureMatches`() {
+		val value = MongoJsonSchema.builder().required("name").build();
+		val typed = typedCriteria { Book::name andDocumentStructureMatches value }
+		val classic = Criteria("name").andDocumentStructureMatches(value)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria bits`() {
+		val typed = typedCriteria { Book::name bits { allClear(123) } }
+		val classic = Criteria("name").bits().allClear(123)
+		assertCriteriaEquals(classic, typed)
+	}
 
 	@Test
 	fun `Typed criteria or operator`() {
@@ -285,6 +309,40 @@ class TypedCriteriaExtensionsTest {
 		}
 		val classic = Criteria("name").isEqualTo("Moby-Dick")
 			.orOperator(
+				Criteria("price").lt(1200),
+				Criteria("price").gt(240)
+			)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria nor operator`() {
+		val typed = typedCriteria {
+			Book::name isEqualTo "Moby-Dick"
+			nor {
+				Book::price lt 1200
+				Book::price gt 240
+			}
+		}
+		val classic = Criteria("name").isEqualTo("Moby-Dick")
+			.norOperator(
+				Criteria("price").lt(1200),
+				Criteria("price").gt(240)
+			)
+		assertCriteriaEquals(classic, typed)
+	}
+
+	@Test
+	fun `Typed criteria and operator`() {
+		val typed = typedCriteria {
+			Book::name isEqualTo "Moby-Dick"
+			and {
+				Book::price lt 1200
+				Book::price gt 240
+			}
+		}
+		val classic = Criteria("name").isEqualTo("Moby-Dick")
+			.andOperator(
 				Criteria("price").lt(1200),
 				Criteria("price").gt(240)
 			)
