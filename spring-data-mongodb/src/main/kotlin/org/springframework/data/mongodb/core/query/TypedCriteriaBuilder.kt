@@ -38,8 +38,8 @@ typealias TypedCriteria = TypedCriteriaBuilder.() -> Unit
  * @author Tjeu Kayim
  */
 class TypedCriteriaBuilder {
-	private var criteria = Criteria()
-	private val operations = mutableListOf<Operation>()
+	internal var criteria: Criteria = Criteria()
+		private set
 
 	/**
 	 * Creates a criterion using equality.
@@ -330,10 +330,8 @@ class TypedCriteriaBuilder {
 		addOperation { bits().let(bitwiseCriteria) }
 
 
-	private fun <T> KProperty<T>.addOperation(operation: Criteria.() -> Criteria): Operation {
-		val typedOperation = Operation(this, operation)
-		operations.add(typedOperation)
-		return typedOperation
+	private fun <T> KProperty<T>.addOperation(operation: Criteria.() -> Criteria) {
+		criteria = criteria.and(nestedFieldName(this)).operation()
 	}
 
 	/**
@@ -342,7 +340,7 @@ class TypedCriteriaBuilder {
 	 * Note that mongodb doesn't support an $or operator to be wrapped in a $not operator.
 	 * @see Criteria.orOperator
 	 */
-	fun or(builder: TypedCriteria) = addOperatorWithCriteria(builder, Criteria::orOperator)
+	fun or(vararg builders: TypedCriteria) = addOperatorWithCriteria(builders, Criteria::orOperator)
 
 	/**
 	 * Creates a 'nor' criteria using the $nor operator for all of the provided criteria.
@@ -350,7 +348,7 @@ class TypedCriteriaBuilder {
 	 * Note that mongodb doesn't support an $nor operator to be wrapped in a $not operator.
 	 * @see Criteria.norOperator
 	 */
-	fun nor(builder: TypedCriteria) = addOperatorWithCriteria(builder, Criteria::norOperator)
+	fun nor(vararg builders: TypedCriteria) = addOperatorWithCriteria(builders, Criteria::norOperator)
 
 	/**
 	 * Creates an 'and' criteria using the $and operator for all of the provided criteria.
@@ -358,11 +356,10 @@ class TypedCriteriaBuilder {
 	 * Note that mongodb doesn't support an $and operator to be wrapped in a $not operator.
 	 * @see Criteria.andOperator
 	 */
-	fun and(builder: TypedCriteria) = addOperatorWithCriteria(builder, Criteria::andOperator)
+	fun and(vararg builders: TypedCriteria) = addOperatorWithCriteria(builders, Criteria::andOperator)
 
-	private fun addOperatorWithCriteria(builder: TypedCriteria, operation: Criteria.(Array<Criteria>) -> Criteria) {
-		val otherCriteria = TypedCriteriaBuilder().apply(builder).listCriteria()
-		chainCriteria()
+	private fun addOperatorWithCriteria(builders: Array<out TypedCriteria>, operation: Criteria.(Array<Criteria>) -> Criteria) {
+		val otherCriteria = builders.map { TypedCriteriaBuilder().apply(it) }.map { it.criteria }
 		criteria.operation(otherCriteria.toTypedArray())
 	}
 
@@ -376,31 +373,4 @@ class TypedCriteriaBuilder {
 	 */
 	operator fun <T, U> KProperty<T>.div(other: KProperty1<T, U>) =
 		NestedProperty(this, other)
-
-	/**
-	 * Apply all operations to one criteria.
-	 */
-	internal fun chainCriteria(): Criteria {
-		criteria = operations.fold(criteria) { chain, head -> head.operation(chain.and(head.name)) }
-		operations.clear()
-		return criteria
-	}
-
-	/**
-	 * Map each operation to a criteria.
-	 */
-	private fun listCriteria(): List<Criteria> {
-		return operations.map { it.criteria }
-	}
-
-	/**
-	 * Typed Operation, stores property and operation function.
-	 */
-	class Operation(
-		property: KProperty<Any?>,
-		val operation: Criteria.() -> Criteria
-	) {
-		val name = nestedFieldName(property)
-		val criteria by lazy { Criteria(name).operation() }
-	}
 }

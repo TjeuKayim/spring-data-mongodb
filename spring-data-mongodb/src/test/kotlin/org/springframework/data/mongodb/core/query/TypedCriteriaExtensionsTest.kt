@@ -319,10 +319,10 @@ class TypedCriteriaExtensionsTest {
 	fun `or operator() typed criteria should equal classic criteria`() {
 		val typed = typedCriteria {
 			Book::name isEqualTo "Moby-Dick"
-			or {
-				Book::price lt 1200
-				Book::price gt 240
-			}
+			or(
+				{ Book::price lt 1200 },
+				{ Book::price gt 240 }
+			)
 		}
 		val classic = Criteria("name").isEqualTo("Moby-Dick")
 			.orOperator(
@@ -336,10 +336,10 @@ class TypedCriteriaExtensionsTest {
 	fun `nor() typed criteria should equal classic criteria`() {
 		val typed = typedCriteria {
 			Book::name isEqualTo "Moby-Dick"
-			nor {
-				Book::price lt 1200
-				Book::price gt 240
-			}
+			nor(
+				{ Book::price lt 1200 },
+				{ Book::price gt 240 }
+			)
 		}
 		val classic = Criteria("name").isEqualTo("Moby-Dick")
 			.norOperator(
@@ -353,10 +353,10 @@ class TypedCriteriaExtensionsTest {
 	fun `and() typed criteria should equal classic criteria`() {
 		val typed = typedCriteria {
 			Book::name isEqualTo "Moby-Dick"
-			and {
-				Book::price lt 1200
-				Book::price gt 240
-			}
+			and(
+				{ Book::price lt 1200 },
+				{ Book::price gt 240 }
+			)
 		}
 		val classic = Criteria("name").isEqualTo("Moby-Dick")
 			.andOperator(

@@ -24,7 +24,7 @@ package org.springframework.data.mongodb.core.query
  */
 fun typedCriteria(criteria: TypedCriteria): Criteria {
 	val builder = TypedCriteriaBuilder().apply(criteria)
-	return builder.chainCriteria()
+	return builder.criteria
 }
 
 /**
@@ -48,10 +48,10 @@ private fun typedCriteriaSample() {
 	// $or operator
 	typedCriteria {
 		Book::name isEqualTo "Moby-Dick"
-		or {
-			Book::price lt 1200
-			Book::price gt 240
-		}
+		or(
+			{ Book::price lt 1200 },
+			{ Book::price gt 240 }
+		)
 	}
 	// Nested properties
 	typedCriteria {
