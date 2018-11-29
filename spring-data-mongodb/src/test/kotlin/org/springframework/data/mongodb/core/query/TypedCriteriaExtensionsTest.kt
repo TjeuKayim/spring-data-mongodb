@@ -18,14 +18,14 @@ package org.springframework.data.mongodb.core.query
 
 import example.Author
 import example.Book
+import org.assertj.core.api.Assertions.*
 import org.bson.BsonRegularExpression
-import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.springframework.data.domain.Example
 import org.springframework.data.geo.Circle
 import org.springframework.data.geo.Point
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint
-import org.springframework.data.mongodb.core.schema.JsonSchemaObject.Type
+import org.springframework.data.mongodb.core.schema.JsonSchemaObject.*
 import org.springframework.data.mongodb.core.schema.MongoJsonSchema
 import java.util.regex.Pattern
 
@@ -41,13 +41,11 @@ class TypedCriteriaExtensionsTest {
 				.and("price").gt(1100)
 				.and("available").isEqualTo(true)
 		)
-
 		val typed = typedQuery {
 			Book::price gt 1100
 			Book::available isEqualTo true
 		}
-
-		assertEquals(classic.queryObject, typed.queryObject)
+		assertThat(classic.queryObject).isEqualTo(typed.queryObject)
 	}
 
 	@Test
@@ -387,6 +385,6 @@ class TypedCriteriaExtensionsTest {
 	}
 
 	private fun assertCriteriaEquals(expected: Criteria, actual: Criteria) {
-		assertEquals(expected, actual)
+		assertThat(actual).isEqualTo(expected)
 	}
 }
