@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2018 the original author or authors.
+ * Copyright 2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,9 @@ import kotlin.reflect.KProperty1
 typealias TypedCriteria = TypedCriteriaBuilder.() -> Unit
 
 /**
- * Builds typed criteria.
- * Used as receiver for [typedCriteria].
+ * Build [Criteria] with Property References as field names.
+ * Used by the functions [typedCriteria] and [typedQuery].
  *
- * @see typedCriteria
  * @author Tjeu Kayim
  */
 class TypedCriteriaBuilder {
@@ -365,8 +364,9 @@ class TypedCriteriaBuilder {
 
 	/**
 	 * Build nested properties.
+	 * Refer to a field in a embedded/nested document.
 	 *
-	 * Example:
+	 * For example, referring to the field "book.author":
 	 * ```
 	 * Book::author / Author::name isEqualTo "Herman Melville"
 	 * ```
