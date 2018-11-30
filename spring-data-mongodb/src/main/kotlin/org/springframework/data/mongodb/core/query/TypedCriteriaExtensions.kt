@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2018 the original author or authors.
+ * Copyright 2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 package org.springframework.data.mongodb.core.query
 
 /**
- * Typed criteria builder.
+ * Build [Criteria] with Property References as field names.
  *
  * @see typedQuery
  * @sample typedCriteriaSample
@@ -28,7 +28,7 @@ fun typedCriteria(criteria: TypedCriteria): Criteria {
 }
 
 /**
- * Create a new Query.
+ * Shorthand for `Query(typedCriteria())`.
  *
  * @see typedCriteria
  * @author Tjeu Kayim
@@ -40,12 +40,12 @@ fun typedQuery(criteria: TypedCriteria): Query {
 private fun typedCriteriaSample() {
 	class Author(val name: String)
 	class Book(val name: String, val price: Int, val author: Author)
-	// Build typed criteria
+	// Use Property References for field names
 	typedCriteria {
 		Book::name isEqualTo "Moby-Dick"
-		Book::price lt 950
+		Book::price exists true
 	}
-	// $or operator
+	// $or, $nor, $and operators
 	typedCriteria {
 		Book::name isEqualTo "Moby-Dick"
 		or(
@@ -53,7 +53,7 @@ private fun typedCriteriaSample() {
 			{ Book::price gt 240 }
 		)
 	}
-	// Nested properties
+	// Nested Properties (i.e. refer to "book.author")
 	typedCriteria {
 		Book::author / Author::name regex "^H"
 	}
