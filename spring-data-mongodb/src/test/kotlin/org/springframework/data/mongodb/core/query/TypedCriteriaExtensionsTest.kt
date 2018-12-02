@@ -32,7 +32,7 @@ import java.util.regex.Pattern
 /**
  * @author Tjeu Kayim
  */
-class TypedCriteriaExtensionsTest {
+class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `typedQuery should equal Query`() {
