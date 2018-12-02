@@ -366,7 +366,7 @@ class TypedCriteriaBuilder {
 
 	/**
 	 * Build nested properties.
-	 * Refer to a field in a embedded/nested document.
+	 * Refer to a field in an embedded/nested document.
 	 *
 	 * For example, referring to the field "book.author":
 	 * ```

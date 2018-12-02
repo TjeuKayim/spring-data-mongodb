@@ -16,7 +16,7 @@
 package org.springframework.data.mongodb.core.query
 
 /**
- * Build [Criteria] with Property References as field names.
+ * Build [Criteria] with type-safe field names.
  *
  * @sample typedCriteriaSample
  *

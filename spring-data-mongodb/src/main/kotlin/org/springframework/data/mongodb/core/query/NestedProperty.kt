@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2018 the original author or authors.
+ * Copyright 2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
 
 /**
- * Nested property to generate Mongo field name.
+ * Refer to a field in an embedded/nested document.
  * @author Tjeu Kayim
  * @since 2.2
  */
@@ -29,6 +29,11 @@ class NestedProperty<T, U>(
 	internal val child: KProperty1<T, U>
 ) : KProperty<U> by child
 
+/**
+ * Recursively construct field name for a nested property.
+ * @author Tjeu Kayim
+ * @since 2.2
+ */
 fun nestedFieldName(property: KProperty<*>): String {
 	return when (property) {
 		is NestedProperty<*, *> ->
