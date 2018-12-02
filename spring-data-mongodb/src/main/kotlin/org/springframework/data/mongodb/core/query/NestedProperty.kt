@@ -25,16 +25,15 @@ import kotlin.reflect.KProperty1
  * @since 2.2
  */
 class NestedProperty<T, U>(
-	internal val parent: KProperty<T>,
-	internal val child: KProperty1<T, U>
-) : KProperty<U> by child
+	internal val parent: KProperty<U>,
+	internal val child: KProperty1<U, T>
+) : KProperty<T> by child
 
 /**
  * Recursively construct field name for a nested property.
  * @author Tjeu Kayim
- * @since 2.2
  */
-fun nestedFieldName(property: KProperty<*>): String {
+internal fun nestedFieldName(property: KProperty<*>): String {
 	return when (property) {
 		is NestedProperty<*, *> ->
 			"${nestedFieldName(property.parent)}.${property.child.name}"
