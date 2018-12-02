@@ -18,9 +18,11 @@ package org.springframework.data.mongodb.core.query
 /**
  * Build [Criteria] with Property References as field names.
  *
- * @see typedQuery
  * @sample typedCriteriaSample
+ *
  * @author Tjeu Kayim
+ * @since 2.2
+ * @see typedQuery
  */
 fun typedCriteria(criteria: TypedCriteria): Criteria =
 	TypedCriteriaBuilder().apply(criteria).criteria
@@ -28,8 +30,9 @@ fun typedCriteria(criteria: TypedCriteria): Criteria =
 /**
  * Shorthand for `Query(typedCriteria())`.
  *
- * @see typedCriteria
  * @author Tjeu Kayim
+ * @since 2.2
+ * @see typedCriteria
  */
 fun typedQuery(criteria: TypedCriteria): Query =
 	Query(typedCriteria(criteria))

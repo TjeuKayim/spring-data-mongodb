@@ -21,6 +21,8 @@ import kotlin.reflect.KProperty1
 
 /**
  * Nested property to generate Mongo field name.
+ * @author Tjeu Kayim
+ * @since 2.2
  */
 class NestedProperty<T, U>(
 	internal val parent: KProperty<T>,

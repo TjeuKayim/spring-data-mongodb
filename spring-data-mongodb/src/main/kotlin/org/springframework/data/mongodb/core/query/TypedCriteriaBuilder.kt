@@ -35,6 +35,8 @@ typealias TypedCriteria = TypedCriteriaBuilder.() -> Unit
  * Used by the functions [typedCriteria] and [typedQuery].
  *
  * @author Tjeu Kayim
+ * @since 2.2
+ * @see typedCriteria
  */
 class TypedCriteriaBuilder {
 	internal var criteria: Criteria = Criteria()
