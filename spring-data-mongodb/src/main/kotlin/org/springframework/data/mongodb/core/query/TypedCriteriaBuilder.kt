@@ -237,7 +237,7 @@ class TypedCriteriaBuilder {
 	 * $centerSphere](https://docs.mongodb.com/manual/reference/operator/query/centerSphere/)
 	 * @see Criteria.withinSphere
 	 */
-	infix fun KProperty<*>.withinSphere(circle: Circle) = addOperation { withinSphere(circle) }
+	infix fun KProperty<GeoJson<*>>.withinSphere(circle: Circle) = addOperation { withinSphere(circle) }
 
 	/**
 	 * Creates a geospatial criterion using a $geoWithin operation.
@@ -246,7 +246,7 @@ class TypedCriteriaBuilder {
 	 * $geoWithin](https://docs.mongodb.com/manual/reference/operator/query/geoWithin/)
 	 * @see Criteria.within
 	 */
-	infix fun KProperty<*>.within(shape: Shape) = addOperation { within(shape) }
+	infix fun KProperty<GeoJson<*>>.within(shape: Shape) = addOperation { within(shape) }
 
 	/**
 	 * Creates a geospatial criterion using a $near operation.
@@ -254,7 +254,7 @@ class TypedCriteriaBuilder {
 	 * See [MongoDB Query operator: $near](https://docs.mongodb.com/manual/reference/operator/query/near/)
 	 * @see Criteria.near
 	 */
-	infix fun KProperty<*>.near(point: Point) = addOperation { near(point) }
+	infix fun KProperty<GeoJson<*>>.near(point: Point) = addOperation { near(point) }
 
 	/**
 	 * Creates a geospatial criterion using a $nearSphere operation. This is only available for Mongo 1.7 and
@@ -264,14 +264,14 @@ class TypedCriteriaBuilder {
 	 * $nearSphere](https://docs.mongodb.com/manual/reference/operator/query/nearSphere/)
 	 * @see Criteria.nearSphere
 	 */
-	infix fun KProperty<*>.nearSphere(point: Point) = addOperation { nearSphere(point) }
+	infix fun KProperty<GeoJson<*>>.nearSphere(point: Point) = addOperation { nearSphere(point) }
 
 	/**
 	 * Creates criterion using `$geoIntersects` operator which matches intersections of the given `geoJson`
 	 * structure and the documents one. Requires MongoDB 2.4 or better.
 	 * @see Criteria.intersects
 	 */
-	infix fun KProperty<*>.intersects(geoJson: GeoJson<*>) = addOperation { intersects(geoJson) }
+	infix fun KProperty<GeoJson<*>>.intersects(geoJson: GeoJson<*>) = addOperation { intersects(geoJson) }
 
 	/**
 	 * Creates a geo-spatial criterion using a $maxDistance operation, for use with $near
@@ -280,14 +280,14 @@ class TypedCriteriaBuilder {
 	 * $maxDistance](https://docs.mongodb.com/manual/reference/operator/query/maxDistance/)
 	 * @see Criteria.maxDistance
 	 */
-	infix fun KProperty<*>.maxDistance(d: Double) = addOperation { maxDistance(d) }
+	infix fun KProperty<GeoJson<*>>.maxDistance(d: Double) = addOperation { maxDistance(d) }
 
 	/**
 	 * Creates a geospatial criterion using a $minDistance operation, for use with $near or
 	 * $nearSphere.
 	 * @see Criteria.minDistance
 	 */
-	infix fun KProperty<*>.minDistance(d: Double) = addOperation { minDistance(d) }
+	infix fun KProperty<GeoJson<*>>.minDistance(d: Double) = addOperation { minDistance(d) }
 
 	/**
 	 * Creates a criterion using the $elemMatch operator

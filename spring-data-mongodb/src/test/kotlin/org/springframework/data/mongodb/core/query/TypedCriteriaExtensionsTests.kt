@@ -32,18 +32,6 @@ import java.util.regex.Pattern
  */
 class TypedCriteriaExtensionsTests {
 
-	data class Book(
-		val title: String = "Moby-Dick",
-		val price: Int = 123,
-		val available: Boolean = true,
-		val categories: List<String> = emptyList(),
-		val author: Author = Author("Herman Melville")
-	)
-
-	data class Author(
-		val name: String
-	)
-
 	@Test
 	fun `typedQuery should equal Query`() {
 
@@ -272,8 +260,8 @@ class TypedCriteriaExtensionsTests {
 	fun `withinSphere() typed criteria should equal classic criteria`() {
 
 		val value = Circle(Point(1.0, 2.0), 3.0)
-		val typed = typedCriteria { Book::title withinSphere value }
-		val classic = Criteria("title").withinSphere(value)
+		val typed = typedCriteria { Building::location withinSphere value }
+		val classic = Criteria("location").withinSphere(value)
 		assertEqualCriteria(typed, classic)
 	}
 
@@ -281,8 +269,8 @@ class TypedCriteriaExtensionsTests {
 	fun `within() typed criteria should equal classic criteria`() {
 
 		val value = Circle(Point(1.0, 2.0), 3.0)
-		val typed = typedCriteria { Book::title within value }
-		val classic = Criteria("title").within(value)
+		val typed = typedCriteria { Building::location within value }
+		val classic = Criteria("location").within(value)
 		assertEqualCriteria(typed, classic)
 	}
 
@@ -290,8 +278,8 @@ class TypedCriteriaExtensionsTests {
 	fun `near() typed criteria should equal classic criteria`() {
 
 		val value = Point(1.0, 2.0)
-		val typed = typedCriteria { Book::title near value }
-		val classic = Criteria("title").near(value)
+		val typed = typedCriteria { Building::location near value }
+		val classic = Criteria("location").near(value)
 		assertEqualCriteria(typed, classic)
 	}
 
@@ -299,8 +287,8 @@ class TypedCriteriaExtensionsTests {
 	fun `nearSphere() typed criteria should equal classic criteria`() {
 
 		val value = Point(1.0, 2.0)
-		val typed = typedCriteria { Book::title nearSphere value }
-		val classic = Criteria("title").nearSphere(value)
+		val typed = typedCriteria { Building::location nearSphere value }
+		val classic = Criteria("location").nearSphere(value)
 		assertEqualCriteria(typed, classic)
 	}
 
@@ -308,24 +296,24 @@ class TypedCriteriaExtensionsTests {
 	fun `intersects() typed criteria should equal classic criteria`() {
 
 		val value = GeoJsonPoint(1.0, 2.0)
-		val typed = typedCriteria { Book::title intersects value }
-		val classic = Criteria("title").intersects(value)
+		val typed = typedCriteria { Building::location intersects value }
+		val classic = Criteria("location").intersects(value)
 		assertEqualCriteria(typed, classic)
 	}
 
 	@Test
 	fun `maxDistance() typed criteria should equal classic criteria`() {
 
-		val typed = typedCriteria { Book::title maxDistance 3.0 }
-		val classic = Criteria("title").maxDistance(3.0)
+		val typed = typedCriteria { Building::location maxDistance 3.0 }
+		val classic = Criteria("location").maxDistance(3.0)
 		assertEqualCriteria(typed, classic)
 	}
 
 	@Test
 	fun `minDistance() typed criteria should equal classic criteria`() {
 
-		val typed = typedCriteria { Book::title minDistance 3.0 }
-		val classic = Criteria("title").minDistance(3.0)
+		val typed = typedCriteria { Building::location minDistance 3.0 }
+		val classic = Criteria("location").minDistance(3.0)
 		assertEqualCriteria(typed, classic)
 	}
 
@@ -452,4 +440,20 @@ class TypedCriteriaExtensionsTests {
 		assertThat(typed.criteriaObject).isEqualTo(classic.criteriaObject)
 		assertThat(typed).isEqualTo(classic)
 	}
+
+	data class Book(
+		val title: String = "Moby-Dick",
+		val price: Int = 123,
+		val available: Boolean = true,
+		val categories: List<String> = emptyList(),
+		val author: Author = Author()
+	)
+
+	data class Author(
+		val name: String = "Herman Melville"
+	)
+
+	data class Building(
+		val location: GeoJsonPoint = GeoJsonPoint(5.481573, 51.451726)
+	)
 }
