@@ -30,7 +30,7 @@ import java.util.regex.Pattern
 /**
  * @author Tjeu Kayim
  */
-class TypedCriteriaExtensionsUnitTests {
+class TypedCriteriaExtensionsTests {
 
 	data class Book(
 		val title: String = "Moby-Dick",
