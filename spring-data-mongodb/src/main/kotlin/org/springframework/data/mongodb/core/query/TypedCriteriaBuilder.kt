@@ -198,7 +198,7 @@ class TypedCriteriaBuilder {
 	 * See [MongoDB Query operator: $regex](https://docs.mongodb.com/manual/reference/operator/query/regex/)
 	 * @see Criteria.regex
 	 */
-	infix fun KProperty<*>.regex(re: String) = addOperation { regex(re, null) }
+	infix fun KProperty<String?>.regex(re: String) = addOperation { regex(re, null) }
 
 	/**
 	 * Creates a criterion using a $regex and $options operator.
@@ -206,25 +206,25 @@ class TypedCriteriaBuilder {
 	 * See [MongoDB Query operator: $regex](https://docs.mongodb.com/manual/reference/operator/query/regex/)
 	 * @see Criteria.regex
 	 */
-	fun KProperty<*>.regex(re: String, options: String?) = addOperation { regex(re, options) }
+	fun KProperty<String?>.regex(re: String, options: String?) = addOperation { regex(re, options) }
 
 	/**
 	 * Syntactical sugar for [isEqualTo] making obvious that we create a regex predicate.
 	 * @see Criteria.regex
 	 */
-	infix fun KProperty<*>.regex(re: Regex) = addOperation { regex(re.toPattern()) }
+	infix fun KProperty<String?>.regex(re: Regex) = addOperation { regex(re.toPattern()) }
 
 	/**
 	 * Syntactical sugar for [isEqualTo] making obvious that we create a regex predicate.
 	 * @see Criteria.regex
 	 */
-	infix fun KProperty<*>.regex(re: Pattern) = addOperation { regex(re) }
+	infix fun KProperty<String?>.regex(re: Pattern) = addOperation { regex(re) }
 
 	/**
 	 * Syntactical sugar for [isEqualTo] making obvious that we create a regex predicate.
 	 * @see Criteria.regex
 	 */
-	infix fun KProperty<*>.regex(re: BsonRegularExpression) = addOperation { regex(re) }
+	infix fun KProperty<String?>.regex(re: BsonRegularExpression) = addOperation { regex(re) }
 
 	/**
 	 * Creates a geospatial criterion using a $geoWithin $centerSphere operation. This is only available for
@@ -311,7 +311,7 @@ class TypedCriteriaBuilder {
 	 * Creates a criterion using the given object as a pattern.
 	 * @see Criteria.alike
 	 */
-	infix fun KProperty<*>.alike(sample: Example<*>) = addOperation { alike(sample) }
+	fun alike(sample: Example<*>) = addOperation { alike(sample) }
 
 	/**
 	 * Creates a criterion (`$jsonSchema`) matching documents against a given structure defined by the
@@ -341,6 +341,10 @@ class TypedCriteriaBuilder {
 
 	private fun <T> KProperty<T>.addOperation(operation: Criteria.() -> Criteria) {
 		criteria = criteria.and(nestedFieldName(this)).operation()
+	}
+
+	private fun addOperation(operation: Criteria.() -> Criteria) {
+		criteria = criteria.operation()
 	}
 
 	/**
