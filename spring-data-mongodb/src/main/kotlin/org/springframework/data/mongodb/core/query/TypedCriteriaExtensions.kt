@@ -22,10 +22,8 @@ package org.springframework.data.mongodb.core.query
  * @sample typedCriteriaSample
  * @author Tjeu Kayim
  */
-fun typedCriteria(criteria: TypedCriteria): Criteria {
-	val builder = TypedCriteriaBuilder().apply(criteria)
-	return builder.criteria
-}
+fun typedCriteria(criteria: TypedCriteria): Criteria =
+	TypedCriteriaBuilder().apply(criteria).criteria
 
 /**
  * Shorthand for `Query(typedCriteria())`.
@@ -33,9 +31,8 @@ fun typedCriteria(criteria: TypedCriteria): Criteria {
  * @see typedCriteria
  * @author Tjeu Kayim
  */
-fun typedQuery(criteria: TypedCriteria): Query {
-	return Query(typedCriteria(criteria))
-}
+fun typedQuery(criteria: TypedCriteria): Query =
+	Query(typedCriteria(criteria))
 
 private fun typedCriteriaSample() {
 	class Author(val name: String)

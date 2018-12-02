@@ -315,7 +315,7 @@ class TypedCriteriaBuilder {
 		addOperation { andDocumentStructureMatches(schema) }
 
 	/**
-	 * Use [BitwiseCriteriaOperators] as gateway to create a criterion using one of the
+	 * Use [Criteria.BitwiseCriteriaOperators] as gateway to create a criterion using one of the
 	 * [bitwise operators](https://docs.mongodb.com/manual/reference/operator/query-bitwise/) like
 	 * `$bitsAllClear`.
 	 *
@@ -358,7 +358,7 @@ class TypedCriteriaBuilder {
 	fun and(vararg builders: TypedCriteria) = addOperatorWithCriteria(builders, Criteria::andOperator)
 
 	private fun addOperatorWithCriteria(builders: Array<out TypedCriteria>, operation: Criteria.(Array<Criteria>) -> Criteria) {
-		val otherCriteria = builders.map { TypedCriteriaBuilder().apply(it) }.map { it.criteria }
+		val otherCriteria = builders.map { typedCriteria(it) }
 		criteria.operation(otherCriteria.toTypedArray())
 	}
 
