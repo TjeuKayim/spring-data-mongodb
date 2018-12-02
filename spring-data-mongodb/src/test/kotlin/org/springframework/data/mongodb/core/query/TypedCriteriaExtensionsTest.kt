@@ -16,8 +16,6 @@
 
 package org.springframework.data.mongodb.core.query
 
-import example.Author
-import example.Book
 import org.assertj.core.api.Assertions.*
 import org.bson.BsonRegularExpression
 import org.junit.Test
@@ -33,6 +31,18 @@ import java.util.regex.Pattern
  * @author Tjeu Kayim
  */
 class TypedCriteriaExtensionsUnitTests {
+
+	data class Book(
+		val title: String = "Moby-Dick",
+		val price: Int = 123,
+		val available: Boolean = true,
+		val categories: List<String> = emptyList(),
+		val author: Author = Author("Herman Melville")
+	)
+
+	data class Author(
+		val name: String
+	)
 
 	@Test
 	fun `typedQuery should equal Query`() {
@@ -53,10 +63,10 @@ class TypedCriteriaExtensionsUnitTests {
 	fun `gt and isEqualTo() typed criteria should equal classic criteria`() {
 
 		val typed = typedCriteria {
-			Book::name isEqualTo "Moby-Dick"
+			Book::title isEqualTo "Moby-Dick"
 			Book::price lt 950
 		}
-		val classic = Criteria("name").isEqualTo("Moby-Dick")
+		val classic = Criteria("title").isEqualTo("Moby-Dick")
 			.and("price").lt(950)
 		assertThat(typed).isEqualTo(classic)
 	}
@@ -64,22 +74,22 @@ class TypedCriteriaExtensionsUnitTests {
 	@Test
 	fun `isEqualTo() typed criteria should equal classic criteria`() {
 
-		val typed = typedCriteria { Book::name isEqualTo "Moby-Dick" }
-		val classic = Criteria("name").isEqualTo("Moby-Dick")
+		val typed = typedCriteria { Book::title isEqualTo "Moby-Dick" }
+		val classic = Criteria("title").isEqualTo("Moby-Dick")
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `ne() typed criteria should equal classic criteria`() {
-		
-		val typed = typedCriteria { Book::name ne "Moby-Dick" }
-		val classic = Criteria("name").ne("Moby-Dick")
+
+		val typed = typedCriteria { Book::title ne "Moby-Dick" }
+		val classic = Criteria("title").ne("Moby-Dick")
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `lt() typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria { Book::price lt 100 }
 		val classic = Criteria("price").lt(100)
 		assertThat(typed).isEqualTo(classic)
@@ -87,7 +97,7 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `lte() typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria { Book::price lte 100 }
 		val classic = Criteria("price").lte(100)
 		assertThat(typed).isEqualTo(classic)
@@ -95,7 +105,7 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `gt() typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria { Book::price gt 100 }
 		val classic = Criteria("price").gt(100)
 		assertThat(typed).isEqualTo(classic)
@@ -103,7 +113,7 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `gte() typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria { Book::price gte 100 }
 		val classic = Criteria("price").gte(100)
 		assertThat(typed).isEqualTo(classic)
@@ -111,7 +121,7 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `inValues(vararg) typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria { Book::price.inValues(1, 2, 3) }
 		val classic = Criteria("price").inValues(1, 2, 3)
 		assertThat(typed).isEqualTo(classic)
@@ -119,7 +129,7 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `inValues(list) typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria { Book::price inValues listOf(1, 2, 3) }
 		val classic = Criteria("price").inValues(listOf(1, 2, 3))
 		assertThat(typed).isEqualTo(classic)
@@ -127,7 +137,7 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `nin(vararg) typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria { Book::price.nin(1, 2, 3) }
 		val classic = Criteria("price").nin(1, 2, 3)
 		assertThat(typed).isEqualTo(classic)
@@ -135,7 +145,7 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `nin(list) typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria { Book::price nin listOf(1, 2, 3) }
 		val classic = Criteria("price").nin(listOf(1, 2, 3))
 		assertThat(typed).isEqualTo(classic)
@@ -143,7 +153,7 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `mod() typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria { Book::price.mod(2, 3) }
 		val classic = Criteria("price").mod(2, 3)
 		assertThat(typed).isEqualTo(classic)
@@ -151,7 +161,7 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `all(vararg) typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria { Book::categories.all(1, 2, 3) }
 		val classic = Criteria("categories").all(1, 2, 3)
 		assertThat(typed).isEqualTo(classic)
@@ -159,7 +169,7 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `all(list) typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria { Book::categories all listOf(1, 2, 3) }
 		val classic = Criteria("categories").all(listOf(1, 2, 3))
 		assertThat(typed).isEqualTo(classic)
@@ -167,7 +177,7 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `size() typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria { Book::categories size 4 }
 		val classic = Criteria("categories").size(4)
 		assertThat(typed).isEqualTo(classic)
@@ -175,192 +185,200 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `exists() typed criteria should equal classic criteria`() {
-		
-		val typed = typedCriteria { Book::name exists true }
-		val classic = Criteria("name").exists(true)
+
+		val typed = typedCriteria { Book::title exists true }
+		val classic = Criteria("title").exists(true)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `type(Int) typed criteria should equal classic criteria`() {
-		
-		val typed = typedCriteria { Book::name type 2 }
-		val classic = Criteria("name").type(2)
+
+		val typed = typedCriteria { Book::title type 2 }
+		val classic = Criteria("title").type(2)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
-	fun `type(Array) typed criteria should equal classic criteria`() {
-		
-		val typed = typedCriteria { Book::name type arrayOf(Type.STRING, Type.BOOLEAN) }
-		val classic = Criteria("name").type(Type.STRING, Type.BOOLEAN)
+	fun `type(List) typed criteria should equal classic criteria`() {
+
+		val typed = typedCriteria { Book::title type listOf(Type.STRING, Type.BOOLEAN) }
+		val classic = Criteria("title").type(Type.STRING, Type.BOOLEAN)
+		assertThat(typed).isEqualTo(classic)
+	}
+
+	@Test
+	fun `type(vararg) typed criteria should equal classic criteria`() {
+
+		val typed = typedCriteria { Book::title.type(Type.STRING, Type.BOOLEAN) }
+		val classic = Criteria("title").type(Type.STRING, Type.BOOLEAN)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `not() typed criteria should equal classic criteria`() {
-		
-		val typed = typedCriteria { Book::name.not() }
-		val classic = Criteria("name").not()
+
+		val typed = typedCriteria { Book::title.not() }
+		val classic = Criteria("title").not()
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `regex(string) typed criteria should equal classic criteria`() {
-		
-		val typed = typedCriteria { Book::name regex "ab+c" }
-		val classic = Criteria("name").regex("ab+c")
+
+		val typed = typedCriteria { Book::title regex "ab+c" }
+		val classic = Criteria("title").regex("ab+c")
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `regex(string, options) typed criteria should equal classic criteria`() {
-		
-		val typed = typedCriteria { Book::name.regex("ab+c", "g") }
-		val classic = Criteria("name").regex("ab+c", "g")
+
+		val typed = typedCriteria { Book::title.regex("ab+c", "g") }
+		val classic = Criteria("title").regex("ab+c", "g")
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `regex(Regex) typed criteria should equal classic criteria`() {
-		
-		val typed = typedCriteria { Book::name regex Regex("ab+c") }
-		val classic = Criteria("name").regex(Pattern.compile("ab+c"))
+
+		val typed = typedCriteria { Book::title regex Regex("ab+c") }
+		val classic = Criteria("title").regex(Pattern.compile("ab+c"))
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `regex(Pattern) typed criteria should equal classic criteria`() {
-		
-		val typed = typedCriteria { Book::name regex Pattern.compile("ab+c") }
-		val classic = Criteria("name").regex(Pattern.compile("ab+c"))
+
+		val typed = typedCriteria { Book::title regex Pattern.compile("ab+c") }
+		val classic = Criteria("title").regex(Pattern.compile("ab+c"))
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `regex(BsonRegularExpression) typed criteria should equal classic criteria`() {
-		
+
 		val expression = BsonRegularExpression("ab+c")
-		val typed = typedCriteria { Book::name regex expression }
-		val classic = Criteria("name").regex(expression)
+		val typed = typedCriteria { Book::title regex expression }
+		val classic = Criteria("title").regex(expression)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `withinSphere() typed criteria should equal classic criteria`() {
-		
+
 		val value = Circle(Point(1.0, 2.0), 3.0)
-		val typed = typedCriteria { Book::name withinSphere value }
-		val classic = Criteria("name").withinSphere(value)
+		val typed = typedCriteria { Book::title withinSphere value }
+		val classic = Criteria("title").withinSphere(value)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `within() typed criteria should equal classic criteria`() {
-		
+
 		val value = Circle(Point(1.0, 2.0), 3.0)
-		val typed = typedCriteria { Book::name within value }
-		val classic = Criteria("name").within(value)
+		val typed = typedCriteria { Book::title within value }
+		val classic = Criteria("title").within(value)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `near() typed criteria should equal classic criteria`() {
-		
+
 		val value = Point(1.0, 2.0)
-		val typed = typedCriteria { Book::name near value }
-		val classic = Criteria("name").near(value)
+		val typed = typedCriteria { Book::title near value }
+		val classic = Criteria("title").near(value)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `nearSphere() typed criteria should equal classic criteria`() {
-		
+
 		val value = Point(1.0, 2.0)
-		val typed = typedCriteria { Book::name nearSphere value }
-		val classic = Criteria("name").nearSphere(value)
+		val typed = typedCriteria { Book::title nearSphere value }
+		val classic = Criteria("title").nearSphere(value)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `intersects() typed criteria should equal classic criteria`() {
-		
+
 		val value = GeoJsonPoint(1.0, 2.0)
-		val typed = typedCriteria { Book::name intersects value }
-		val classic = Criteria("name").intersects(value)
+		val typed = typedCriteria { Book::title intersects value }
+		val classic = Criteria("title").intersects(value)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `maxDistance() typed criteria should equal classic criteria`() {
-		
-		val typed = typedCriteria { Book::name maxDistance 3.0 }
-		val classic = Criteria("name").maxDistance(3.0)
+
+		val typed = typedCriteria { Book::title maxDistance 3.0 }
+		val classic = Criteria("title").maxDistance(3.0)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `minDistance() typed criteria should equal classic criteria`() {
-		
-		val typed = typedCriteria { Book::name minDistance 3.0 }
-		val classic = Criteria("name").minDistance(3.0)
+
+		val typed = typedCriteria { Book::title minDistance 3.0 }
+		val classic = Criteria("title").minDistance(3.0)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `elemMatch() typed criteria should equal classic criteria`() {
-		
+
 		val value = Criteria("price").lt(950)
-		val typed = typedCriteria { Book::name elemMatch value }
-		val classic = Criteria("name").elemMatch(value)
+		val typed = typedCriteria { Book::title elemMatch value }
+		val classic = Criteria("title").elemMatch(value)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `elemMatch(TypedCriteria) typed criteria should equal classic criteria`() {
-		
-		val typed = typedCriteria { Book::name elemMatch { Book::price lt 950 } }
-		val classic = Criteria("name").elemMatch(Criteria("price").lt(950))
+
+		val typed = typedCriteria { Book::title elemMatch { Book::price lt 950 } }
+		val classic = Criteria("title").elemMatch(Criteria("price").lt(950))
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `alike() typed criteria should equal classic criteria`() {
-		
+
 		val value = Example.of(Book())
-		val typed = typedCriteria { Book::name alike value }
-		val classic = Criteria("name").alike(value)
+		val typed = typedCriteria { Book::title alike value }
+		val classic = Criteria("title").alike(value)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `andDocumentStructureMatches() typed criteria should equal classic criteria`() {
-		
+
 		val value = MongoJsonSchema.builder().required("name").build()
-		val typed = typedCriteria { Book::name andDocumentStructureMatches value }
-		val classic = Criteria("name").andDocumentStructureMatches(value)
+		val typed = typedCriteria { Book::title andDocumentStructureMatches value }
+		val classic = Criteria("title").andDocumentStructureMatches(value)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `bits() typed criteria should equal classic criteria`() {
-		
-		val typed = typedCriteria { Book::name bits { allClear(123) } }
-		val classic = Criteria("name").bits().allClear(123)
+
+		val typed = typedCriteria { Book::title bits { allClear(123) } }
+		val classic = Criteria("title").bits().allClear(123)
 		assertThat(typed).isEqualTo(classic)
 	}
 
 	@Test
 	fun `or operator() typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria {
-			Book::name isEqualTo "Moby-Dick"
+			Book::title isEqualTo "Moby-Dick"
 			or(
 				{ Book::price lt 1200 },
 				{ Book::price gt 240 }
 			)
 		}
-		val classic = Criteria("name").isEqualTo("Moby-Dick")
+		val classic = Criteria("title").isEqualTo("Moby-Dick")
 			.orOperator(
 				Criteria("price").lt(1200),
 				Criteria("price").gt(240)
@@ -370,15 +388,15 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `nor() typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria {
-			Book::name isEqualTo "Moby-Dick"
+			Book::title isEqualTo "Moby-Dick"
 			nor(
 				{ Book::price lt 1200 },
 				{ Book::price gt 240 }
 			)
 		}
-		val classic = Criteria("name").isEqualTo("Moby-Dick")
+		val classic = Criteria("title").isEqualTo("Moby-Dick")
 			.norOperator(
 				Criteria("price").lt(1200),
 				Criteria("price").gt(240)
@@ -388,15 +406,15 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `and() typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria {
-			Book::name isEqualTo "Moby-Dick"
+			Book::title isEqualTo "Moby-Dick"
 			and(
 				{ Book::price lt 1200 },
 				{ Book::price gt 240 }
 			)
 		}
-		val classic = Criteria("name").isEqualTo("Moby-Dick")
+		val classic = Criteria("title").isEqualTo("Moby-Dick")
 			.andOperator(
 				Criteria("price").lt(1200),
 				Criteria("price").gt(240)
@@ -406,7 +424,7 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `One level nested typed criteria should equal classic criteria`() {
-		
+
 		val typed = typedCriteria {
 			Book::author / Author::name isEqualTo "Herman Melville"
 		}
@@ -416,7 +434,7 @@ class TypedCriteriaExtensionsUnitTests {
 
 	@Test
 	fun `Two levels nested typed criteria should equal classic criteria`() {
-		
+
 		data class Entity(val book: Book)
 
 		val typed = typedCriteria {

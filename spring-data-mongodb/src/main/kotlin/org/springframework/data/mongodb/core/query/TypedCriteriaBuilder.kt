@@ -174,7 +174,15 @@ class TypedCriteriaBuilder {
 	 * See [MongoDB Query operator: $type](https://docs.mongodb.com/manual/reference/operator/query/type/)
 	 * @see Criteria.type
 	 */
-	infix fun KProperty<*>.type(t: Array<JsonSchemaObject.Type>) = addOperation { type(*t) }
+	infix fun KProperty<*>.type(t: Collection<JsonSchemaObject.Type>) = addOperation { type(*t.toTypedArray()) }
+
+	/**
+	 * Creates a criterion using the $type operator.
+	 *
+	 * See [MongoDB Query operator: $type](https://docs.mongodb.com/manual/reference/operator/query/type/)
+	 * @see Criteria.type
+	 */
+	fun KProperty<*>.type(vararg t: JsonSchemaObject.Type) = addOperation { type(*t) }
 
 	/**
 	 * Creates a criterion using the $not meta operator which affects the clause directly following
