@@ -417,6 +417,38 @@ class TypedCriteriaExtensionsTests {
 	}
 
 	@Test
+	fun `infix or & and typed criteria should equal classic criteria`() {
+
+		val typed = (Book::title isEqualTo "Moby-Dick") and ((Book::price lt 1200) or (Book::price gt 240))
+		val classic = Criteria().andOperator(
+			Criteria("title").isEqualTo("Moby-Dick"),
+			Criteria().orOperator(Criteria("price").lt(1200), Criteria("price").gt(240))
+		)
+		println(classic.criteriaObject.toJson())
+		assertEqualCriteria(typed, classic)
+	}
+
+	@Test
+	fun `infix or typed criteria should equal classic criteria`() {
+
+		val typed = typedCriteria(
+			Book::title isEqualTo "Moby-Dick",
+			(Book::price lt 1200) or (Book::price gt 240)
+		)
+		val classic = Criteria("title").isEqualTo("Moby-Dick")
+			.orOperator(Criteria("price").lt(1200), Criteria("price").gt(240));
+		assertEqualCriteria(typed, classic)
+	}
+
+	@Test
+	fun `infix nor typed criteria should equal classic criteria`() {
+
+		val typed = (Book::price lt 1200) nor (Book::price gt 240)
+		val classic = Criteria().norOperator(Criteria("price").lt(1200), Criteria("price").gt(240))
+		assertEqualCriteria(typed, classic)
+	}
+
+	@Test
 	fun `One level nested typed criteria should equal classic criteria`() {
 
 		val typed = Book::author / Author::name isEqualTo "Herman Melville"

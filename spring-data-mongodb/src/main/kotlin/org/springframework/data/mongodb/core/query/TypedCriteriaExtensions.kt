@@ -53,16 +53,13 @@ private fun typedCriteriaSample(mongoOperations: MongoOperations) {
 	// Chain with typedCriteria()
 	typedCriteria(
 		Book::author elemMatch
-				(Author::name isEqualTo "Herman Melville"),
+			(Author::name isEqualTo "Herman Melville"),
 		Book::price exists true
 	)
 	// $or, $nor, $and operators
 	typedCriteria(
 		Book::name isEqualTo "Moby-Dick",
-		orOperator(
-			Book::price lt 1200,
-			Book::price gt 240
-		)
+		(Book::price lt 1200) or (Book::price gt 240)
 	)
 	// Nested Properties (i.e. refer to "book.author")
 	typedCriteria(

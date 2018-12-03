@@ -430,6 +430,16 @@ infix fun KProperty<*>.bits(bitwiseCriteria: Criteria.BitwiseCriteriaOperators.(
 fun orOperator(vararg builders: TypedCriteria) = addOperatorWithCriteria(builders, Criteria::orOperator)
 
 /**
+ * Creates an 'or' criteria using the $or operator for all of the provided criteria
+ *
+ * Note that mongodb doesn't support an $or operator to be wrapped in a $not operator.
+ * @author Tjeu Kayim
+ * @since 2.2
+ * @see Criteria.orOperator
+ */
+infix fun TypedCriteria.or(other: TypedCriteria) = orOperator(this, other)
+
+/**
  * Creates a 'nor' criteria using the $nor operator for all of the provided criteria.
  *
  * Note that mongodb doesn't support an $nor operator to be wrapped in a $not operator.
@@ -440,6 +450,16 @@ fun orOperator(vararg builders: TypedCriteria) = addOperatorWithCriteria(builder
 fun norOperator(vararg builders: TypedCriteria) = addOperatorWithCriteria(builders, Criteria::norOperator)
 
 /**
+ * Creates a 'nor' criteria using the $nor operator for all of the provided criteria.
+ *
+ * Note that mongodb doesn't support an $nor operator to be wrapped in a $not operator.
+ * @author Tjeu Kayim
+ * @since 2.2
+ * @see Criteria.norOperator
+ */
+infix fun TypedCriteria.nor(other: TypedCriteria) = norOperator(this, other)
+
+/**
  * Creates an 'and' criteria using the $and operator for all of the provided criteria.
  *
  * Note that mongodb doesn't support an $and operator to be wrapped in a $not operator.
@@ -448,6 +468,16 @@ fun norOperator(vararg builders: TypedCriteria) = addOperatorWithCriteria(builde
  * @see Criteria.andOperator
  */
 fun andOperator(vararg builders: TypedCriteria) = addOperatorWithCriteria(builders, Criteria::andOperator)
+
+/**
+ * Creates an 'and' criteria using the $and operator for all of the provided criteria.
+ *
+ * Note that mongodb doesn't support an $and operator to be wrapped in a $not operator.
+ * @author Tjeu Kayim
+ * @since 2.2
+ * @see Criteria.andOperator
+ */
+infix fun TypedCriteria.and(other: TypedCriteria) = andOperator(this, other)
 
 private fun addOperatorWithCriteria(
 	builders: Array<out TypedCriteria>,
