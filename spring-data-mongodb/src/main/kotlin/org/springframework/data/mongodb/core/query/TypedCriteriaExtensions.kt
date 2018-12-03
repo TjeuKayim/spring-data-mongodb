@@ -28,9 +28,7 @@ import org.springframework.data.mongodb.core.find
  * @see typedQuery
  */
 fun typedCriteria(vararg operations: TypedCriteria): Criteria {
-	return operations.fold(Criteria()) { chain, head ->
-		head.operation(if (head.name == null) chain else chain.and(head.name))
-	}
+	return operations.fold(Criteria()) { chain, operation -> operation.chain(chain) }
 }
 
 /**

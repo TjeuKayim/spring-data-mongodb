@@ -35,11 +35,15 @@ import kotlin.reflect.KProperty1
  * @since 2.2
  */
 class TypedCriteria(
-	val operation: Criteria.() -> Criteria,
-	property: KProperty<*>? = null
+	private val operation: Criteria.() -> Criteria,
+	private val property: KProperty<*>? = null
 ) : CriteriaDefinition {
-	val name = property?.let(::nestedFieldName)
-	val criteria by lazy { operation(name?.let(::Criteria) ?: Criteria()) }
+	val criteria by lazy { chain(Criteria()) }
+
+	fun chain(start: Criteria): Criteria {
+		return (if (property == null) start else start.and(nestedFieldName(property)))
+			.operation()
+	}
 
 	override fun getCriteriaObject(): Document = criteria.criteriaObject
 
