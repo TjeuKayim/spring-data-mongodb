@@ -15,6 +15,9 @@
  */
 package org.springframework.data.mongodb.core.query
 
+import org.springframework.data.mongodb.core.MongoOperations
+import org.springframework.data.mongodb.core.find
+
 /**
  * Build [Criteria] with type-safe field names.
  *
@@ -40,12 +43,19 @@ fun typedCriteria(vararg operations: TypedCriteria): Criteria {
 fun typedQuery(vararg criteria: TypedCriteria): Query =
 	Query(typedCriteria(*criteria))
 
-private fun typedCriteriaSample() {
+private fun typedCriteriaSample(mongoOperations: MongoOperations) {
 	class Author(val name: String)
 	class Book(val name: String, val price: Int, val author: Author)
 	// Use Property References for field names
+	mongoOperations.find<Book>(
+		Query(
+			Book::name isEqualTo "Moby-Dick"
+		)
+	)
+	// Chain with typedCriteria()
 	typedCriteria(
-		Book::name isEqualTo "Moby-Dick",
+		Book::author elemMatch
+				(Author::name isEqualTo "Herman Melville"),
 		Book::price exists true
 	)
 	// $or, $nor, $and operators
