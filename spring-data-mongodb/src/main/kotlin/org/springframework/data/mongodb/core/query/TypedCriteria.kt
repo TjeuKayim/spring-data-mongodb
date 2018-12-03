@@ -49,6 +49,8 @@ class TypedCriteria(
 
 /**
  * Creates a criterion using equality.
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.isEqualTo
  */
 infix fun <T> KProperty<T>.isEqualTo(value: T) = TypedCriteria({ isEqualTo(value) }, this)
@@ -57,6 +59,8 @@ infix fun <T> KProperty<T>.isEqualTo(value: T) = TypedCriteria({ isEqualTo(value
  * Creates a criterion using the $ne operator.
  *
  * See [MongoDB Query operator: $ne](https://docs.mongodb.com/manual/reference/operator/query/ne/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.ne
  */
 infix fun <T> KProperty<T>.ne(value: T) = TypedCriteria({ ne(value) }, this)
@@ -65,6 +69,8 @@ infix fun <T> KProperty<T>.ne(value: T) = TypedCriteria({ ne(value) }, this)
  * Creates a criterion using the $lt operator.
  *
  * See [MongoDB Query operator: $lt](https://docs.mongodb.com/manual/reference/operator/query/lt/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.lt
  */
 infix fun <T> KProperty<T>.lt(value: T) = TypedCriteria({ lt(value) }, this)
@@ -73,6 +79,8 @@ infix fun <T> KProperty<T>.lt(value: T) = TypedCriteria({ lt(value) }, this)
  * Creates a criterion using the $lte operator.
  *
  * See [MongoDB Query operator: $lte](https://docs.mongodb.com/manual/reference/operator/query/lte/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.lte
  */
 infix fun <T> KProperty<T>.lte(value: T) = TypedCriteria({ lte(value) }, this)
@@ -81,6 +89,8 @@ infix fun <T> KProperty<T>.lte(value: T) = TypedCriteria({ lte(value) }, this)
  * Creates a criterion using the $gt operator.
  *
  * See [MongoDB Query operator: $gt](https://docs.mongodb.com/manual/reference/operator/query/gt/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.gt
  */
 infix fun <T> KProperty<T>.gt(value: T) = TypedCriteria({ gt(value) }, this)
@@ -89,6 +99,8 @@ infix fun <T> KProperty<T>.gt(value: T) = TypedCriteria({ gt(value) }, this)
  * Creates a criterion using the $gte operator.
  *
  * See [MongoDB Query operator: $gte](https://docs.mongodb.com/manual/reference/operator/query/gte/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.gte
  */
 infix fun <T> KProperty<T>.gte(value: T) = TypedCriteria({ gte(value) }, this)
@@ -97,6 +109,8 @@ infix fun <T> KProperty<T>.gte(value: T) = TypedCriteria({ gte(value) }, this)
  * Creates a criterion using the $in operator.
  *
  * See [MongoDB Query operator: $in](https://docs.mongodb.com/manual/reference/operator/query/in/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.inValues
  */
 fun <T> KProperty<T>.inValues(vararg o: Any) = TypedCriteria({ `in`(*o) }, this)
@@ -105,6 +119,8 @@ fun <T> KProperty<T>.inValues(vararg o: Any) = TypedCriteria({ `in`(*o) }, this)
  * Creates a criterion using the $in operator.
  *
  * See [MongoDB Query operator: $in](https://docs.mongodb.com/manual/reference/operator/query/in/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.inValues
  */
 infix fun <T> KProperty<T>.inValues(value: Collection<T>) = TypedCriteria({ `in`(value) }, this)
@@ -113,6 +129,8 @@ infix fun <T> KProperty<T>.inValues(value: Collection<T>) = TypedCriteria({ `in`
  * Creates a criterion using the $nin operator.
  *
  * See [MongoDB Query operator: $nin](https://docs.mongodb.com/manual/reference/operator/query/nin/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.nin
  */
 fun <T> KProperty<T>.nin(vararg o: Any) = TypedCriteria({ nin(*o) }, this)
@@ -121,6 +139,8 @@ fun <T> KProperty<T>.nin(vararg o: Any) = TypedCriteria({ nin(*o) }, this)
  * Creates a criterion using the $nin operator.
  *
  * See [MongoDB Query operator: $nin](https://docs.mongodb.com/manual/reference/operator/query/nin/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.nin
  */
 infix fun <T> KProperty<T>.nin(value: Collection<T>) = TypedCriteria({ nin(value) }, this)
@@ -129,6 +149,8 @@ infix fun <T> KProperty<T>.nin(value: Collection<T>) = TypedCriteria({ nin(value
  * Creates a criterion using the $mod operator.
  *
  * See [MongoDB Query operator: $mod](https://docs.mongodb.com/manual/reference/operator/query/mod/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.mod
  */
 fun KProperty<Number>.mod(value: Number, remainder: Number) = TypedCriteria({ mod(value, remainder) }, this)
@@ -137,6 +159,8 @@ fun KProperty<Number>.mod(value: Number, remainder: Number) = TypedCriteria({ mo
  * Creates a criterion using the $all operator.
  *
  * See [MongoDB Query operator: $all](https://docs.mongodb.com/manual/reference/operator/query/all/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.all
  */
 fun KProperty<*>.all(vararg o: Any) = TypedCriteria({ all(*o) }, this)
@@ -145,6 +169,8 @@ fun KProperty<*>.all(vararg o: Any) = TypedCriteria({ all(*o) }, this)
  * Creates a criterion using the $all operator.
  *
  * See [MongoDB Query operator: $all](https://docs.mongodb.com/manual/reference/operator/query/all/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.all
  */
 infix fun KProperty<*>.all(value: Collection<*>) = TypedCriteria({ all(value) }, this)
@@ -153,6 +179,8 @@ infix fun KProperty<*>.all(value: Collection<*>) = TypedCriteria({ all(value) },
  * Creates a criterion using the $size operator.
  *
  * See [MongoDB Query operator: $size](https://docs.mongodb.com/manual/reference/operator/query/size/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.size
  */
 infix fun KProperty<*>.size(s: Int) = TypedCriteria({ size(s) }, this)
@@ -161,6 +189,8 @@ infix fun KProperty<*>.size(s: Int) = TypedCriteria({ size(s) }, this)
  * Creates a criterion using the $exists operator.
  *
  * See [MongoDB Query operator: $exists](https://docs.mongodb.com/manual/reference/operator/query/exists/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.exists
  */
 infix fun KProperty<*>.exists(b: Boolean) = TypedCriteria({ exists(b) }, this)
@@ -169,6 +199,8 @@ infix fun KProperty<*>.exists(b: Boolean) = TypedCriteria({ exists(b) }, this)
  * Creates a criterion using the $type operator.
  *
  * See [MongoDB Query operator: $type](https://docs.mongodb.com/manual/reference/operator/query/type/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.type
  */
 infix fun KProperty<*>.type(t: Int) = TypedCriteria({ type(t) }, this)
@@ -177,6 +209,8 @@ infix fun KProperty<*>.type(t: Int) = TypedCriteria({ type(t) }, this)
  * Creates a criterion using the $type operator.
  *
  * See [MongoDB Query operator: $type](https://docs.mongodb.com/manual/reference/operator/query/type/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.type
  */
 infix fun KProperty<*>.type(t: Collection<JsonSchemaObject.Type>) = TypedCriteria({ type(*t.toTypedArray()) }, this)
@@ -185,6 +219,8 @@ infix fun KProperty<*>.type(t: Collection<JsonSchemaObject.Type>) = TypedCriteri
  * Creates a criterion using the $type operator.
  *
  * See [MongoDB Query operator: $type](https://docs.mongodb.com/manual/reference/operator/query/type/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.type
  */
 fun KProperty<*>.type(vararg t: JsonSchemaObject.Type) = TypedCriteria({ type(*t) }, this)
@@ -193,6 +229,8 @@ fun KProperty<*>.type(vararg t: JsonSchemaObject.Type) = TypedCriteria({ type(*t
  * Creates a criterion using the $not meta operator which affects the clause directly following
  *
  * See [MongoDB Query operator: $not](https://docs.mongodb.com/manual/reference/operator/query/not/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.not
  */
 fun KProperty<*>.not() = TypedCriteria({ not() }, this)
@@ -201,6 +239,8 @@ fun KProperty<*>.not() = TypedCriteria({ not() }, this)
  * Creates a criterion using a $regex operator.
  *
  * See [MongoDB Query operator: $regex](https://docs.mongodb.com/manual/reference/operator/query/regex/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.regex
  */
 infix fun KProperty<String?>.regex(re: String) = TypedCriteria({ regex(re, null) }, this)
@@ -209,24 +249,32 @@ infix fun KProperty<String?>.regex(re: String) = TypedCriteria({ regex(re, null)
  * Creates a criterion using a $regex and $options operator.
  *
  * See [MongoDB Query operator: $regex](https://docs.mongodb.com/manual/reference/operator/query/regex/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.regex
  */
 fun KProperty<String?>.regex(re: String, options: String?) = TypedCriteria({ regex(re, options) }, this)
 
 /**
  * Syntactical sugar for [isEqualTo] making obvious that we create a regex predicate.
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.regex
  */
 infix fun KProperty<String?>.regex(re: Regex) = TypedCriteria({ regex(re.toPattern()) }, this)
 
 /**
  * Syntactical sugar for [isEqualTo] making obvious that we create a regex predicate.
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.regex
  */
 infix fun KProperty<String?>.regex(re: Pattern) = TypedCriteria({ regex(re) }, this)
 
 /**
  * Syntactical sugar for [isEqualTo] making obvious that we create a regex predicate.
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.regex
  */
 infix fun KProperty<String?>.regex(re: BsonRegularExpression) = TypedCriteria({ regex(re) }, this)
@@ -240,6 +288,8 @@ infix fun KProperty<String?>.regex(re: BsonRegularExpression) = TypedCriteria({ 
  *
  * See [MongoDB Query operator:
 	 * $centerSphere](https://docs.mongodb.com/manual/reference/operator/query/centerSphere/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.withinSphere
  */
 infix fun KProperty<GeoJson<*>>.withinSphere(circle: Circle) = TypedCriteria({ withinSphere(circle) }, this)
@@ -249,6 +299,8 @@ infix fun KProperty<GeoJson<*>>.withinSphere(circle: Circle) = TypedCriteria({ w
  *
  * See [MongoDB Query operator:
 	 * $geoWithin](https://docs.mongodb.com/manual/reference/operator/query/geoWithin/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.within
  */
 infix fun KProperty<GeoJson<*>>.within(shape: Shape) = TypedCriteria({ within(shape) }, this)
@@ -257,6 +309,8 @@ infix fun KProperty<GeoJson<*>>.within(shape: Shape) = TypedCriteria({ within(sh
  * Creates a geospatial criterion using a $near operation.
  *
  * See [MongoDB Query operator: $near](https://docs.mongodb.com/manual/reference/operator/query/near/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.near
  */
 infix fun KProperty<GeoJson<*>>.near(point: Point) = TypedCriteria({ near(point) }, this)
@@ -267,6 +321,8 @@ infix fun KProperty<GeoJson<*>>.near(point: Point) = TypedCriteria({ near(point)
  *
  * See [MongoDB Query operator:
 	 * $nearSphere](https://docs.mongodb.com/manual/reference/operator/query/nearSphere/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.nearSphere
  */
 infix fun KProperty<GeoJson<*>>.nearSphere(point: Point) = TypedCriteria({ nearSphere(point) }, this)
@@ -274,6 +330,8 @@ infix fun KProperty<GeoJson<*>>.nearSphere(point: Point) = TypedCriteria({ nearS
 /**
  * Creates criterion using `$geoIntersects` operator which matches intersections of the given `geoJson`
  * structure and the documents one. Requires MongoDB 2.4 or better.
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.intersects
  */
 infix fun KProperty<GeoJson<*>>.intersects(geoJson: GeoJson<*>) = TypedCriteria({ intersects(geoJson) }, this)
@@ -283,6 +341,8 @@ infix fun KProperty<GeoJson<*>>.intersects(geoJson: GeoJson<*>) = TypedCriteria(
  *
  * See [MongoDB Query operator:
 	 * $maxDistance](https://docs.mongodb.com/manual/reference/operator/query/maxDistance/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.maxDistance
  */
 infix fun KProperty<GeoJson<*>>.maxDistance(d: Double) = TypedCriteria({ maxDistance(d) }, this)
@@ -290,6 +350,8 @@ infix fun KProperty<GeoJson<*>>.maxDistance(d: Double) = TypedCriteria({ maxDist
 /**
  * Creates a geospatial criterion using a $minDistance operation, for use with $near or
  * $nearSphere.
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.minDistance
  */
 infix fun KProperty<GeoJson<*>>.minDistance(d: Double) = TypedCriteria({ minDistance(d) }, this)
@@ -299,6 +361,8 @@ infix fun KProperty<GeoJson<*>>.minDistance(d: Double) = TypedCriteria({ minDist
  *
  * See [MongoDB Query operator:
 	 * $elemMatch](https://docs.mongodb.com/manual/reference/operator/query/elemMatch/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.elemMatch
  */
 infix fun KProperty<*>.elemMatch(c: Criteria) = TypedCriteria({ elemMatch(c) }, this)
@@ -308,12 +372,16 @@ infix fun KProperty<*>.elemMatch(c: Criteria) = TypedCriteria({ elemMatch(c) }, 
  *
  * See [MongoDB Query operator:
 	 * $elemMatch](https://docs.mongodb.com/manual/reference/operator/query/elemMatch/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.elemMatch
  */
 infix fun KProperty<*>.elemMatch(c: TypedCriteria) = TypedCriteria({ elemMatch(typedCriteria(c)) }, this)
 
 /**
  * Creates a criterion using the given object as a pattern.
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.alike
  */
 fun alike(sample: Example<*>) = TypedCriteria({ alike(sample) })
@@ -324,6 +392,8 @@ fun alike(sample: Example<*>) = TypedCriteria({ alike(sample) })
  *
  * See [MongoDB Query operator:
 	 * $jsonSchema](https://docs.mongodb.com/manual/reference/operator/query/jsonSchema/)
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.andDocumentStructureMatches
  */
 infix fun KProperty<*>.andDocumentStructureMatches(schema: MongoJsonSchema) =
@@ -338,6 +408,8 @@ infix fun KProperty<*>.andDocumentStructureMatches(schema: MongoJsonSchema) =
  * ```
  * bits { allClear(123) }
  * ```
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.bits
  */
 infix fun KProperty<*>.bits(bitwiseCriteria: Criteria.BitwiseCriteriaOperators.() -> Criteria) =
@@ -347,6 +419,8 @@ infix fun KProperty<*>.bits(bitwiseCriteria: Criteria.BitwiseCriteriaOperators.(
  * Creates an 'or' criteria using the $or operator for all of the provided criteria
  *
  * Note that mongodb doesn't support an $or operator to be wrapped in a $not operator.
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.orOperator
  */
 fun orOperator(vararg builders: TypedCriteria) = addOperatorWithCriteria(builders, Criteria::orOperator)
@@ -355,6 +429,8 @@ fun orOperator(vararg builders: TypedCriteria) = addOperatorWithCriteria(builder
  * Creates a 'nor' criteria using the $nor operator for all of the provided criteria.
  *
  * Note that mongodb doesn't support an $nor operator to be wrapped in a $not operator.
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.norOperator
  */
 fun norOperator(vararg builders: TypedCriteria) = addOperatorWithCriteria(builders, Criteria::norOperator)
@@ -363,6 +439,8 @@ fun norOperator(vararg builders: TypedCriteria) = addOperatorWithCriteria(builde
  * Creates an 'and' criteria using the $and operator for all of the provided criteria.
  *
  * Note that mongodb doesn't support an $and operator to be wrapped in a $not operator.
+ * @author Tjeu Kayim
+ * @since 2.2
  * @see Criteria.andOperator
  */
 fun andOperator(vararg builders: TypedCriteria) = addOperatorWithCriteria(builders, Criteria::andOperator)
