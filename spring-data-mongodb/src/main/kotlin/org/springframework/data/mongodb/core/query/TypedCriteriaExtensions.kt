@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2010-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,11 @@ package org.springframework.data.mongodb.core.query
  * @since 2.2
  * @see typedQuery
  */
-fun typedCriteria(criteria: TypedCriteria): Criteria =
-	TypedCriteriaBuilder().apply(criteria).criteria
+fun typedCriteria(vararg operations: TypedCriteria): Criteria {
+	return operations.fold(Criteria()) { chain, head ->
+		head.operation(if (head.name == null) chain else chain.and(head.name))
+	}
+}
 
 /**
  * Shorthand for `Query(typedCriteria())`.
@@ -34,27 +37,27 @@ fun typedCriteria(criteria: TypedCriteria): Criteria =
  * @since 2.2
  * @see typedCriteria
  */
-fun typedQuery(criteria: TypedCriteria): Query =
-	Query(typedCriteria(criteria))
+fun typedQuery(vararg criteria: TypedCriteria): Query =
+	Query(typedCriteria(*criteria))
 
 private fun typedCriteriaSample() {
 	class Author(val name: String)
 	class Book(val name: String, val price: Int, val author: Author)
 	// Use Property References for field names
-	typedCriteria {
-		Book::name isEqualTo "Moby-Dick"
+	typedCriteria(
+		Book::name isEqualTo "Moby-Dick",
 		Book::price exists true
-	}
+	)
 	// $or, $nor, $and operators
-	typedCriteria {
-		Book::name isEqualTo "Moby-Dick"
-		or(
-			{ Book::price lt 1200 },
-			{ Book::price gt 240 }
+	typedCriteria(
+		Book::name isEqualTo "Moby-Dick",
+		orOperator(
+			Book::price lt 1200,
+			Book::price gt 240
 		)
-	}
+	)
 	// Nested Properties (i.e. refer to "book.author")
-	typedCriteria {
+	typedCriteria(
 		Book::author / Author::name regex "^H"
-	}
+	)
 }
