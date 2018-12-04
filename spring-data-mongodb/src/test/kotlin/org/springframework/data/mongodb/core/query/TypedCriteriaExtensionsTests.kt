@@ -238,7 +238,6 @@ class TypedCriteriaExtensionsTests {
 	}
 
 	private fun assertEqualCriteriaByJson(typed: Criteria, classic: Criteria) {
-		assertThat(typed).isEqualTo(classic)
 		assertThat(typed.criteriaObject.toJson()).isEqualTo(classic.criteriaObject.toJson())
 	}
 
@@ -428,7 +427,6 @@ class TypedCriteriaExtensionsTests {
 			Criteria("title").isEqualTo("Moby-Dick"),
 			Criteria().orOperator(Criteria("price").lt(1200), Criteria("price").gt(240))
 		)
-		println(classic.criteriaObject.toJson())
 		assertEqualCriteria(typed, classic)
 	}
 
@@ -473,7 +471,6 @@ class TypedCriteriaExtensionsTests {
 
 	private fun assertEqualCriteria(typed: Criteria, classic: Criteria) {
 		assertThat(typed.criteriaObject).isEqualTo(classic.criteriaObject)
-		assertThat(typed).isEqualTo(classic)
 	}
 
 	data class Book(

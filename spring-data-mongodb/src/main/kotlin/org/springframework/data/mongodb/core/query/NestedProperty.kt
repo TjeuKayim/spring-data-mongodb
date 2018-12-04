@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2010-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,3 +40,15 @@ internal fun nestedFieldName(property: KProperty<*>): String {
 		else -> property.name
 	}
 }
+
+/**
+ * Build nested properties.
+ * Refer to a field in an embedded/nested document.
+ *
+ * For example, referring to the field "book.author":
+ * ```
+ * Book::author / Author::name isEqualTo "Herman Melville"
+ * ```
+ */
+operator fun <T, U> KProperty<T>.div(other: KProperty1<T, U>) =
+	NestedProperty(this, other)

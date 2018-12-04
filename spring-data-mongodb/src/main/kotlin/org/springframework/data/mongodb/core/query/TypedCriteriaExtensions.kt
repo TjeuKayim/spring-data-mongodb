@@ -19,8 +19,7 @@ import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.data.mongodb.core.find
 
 /**
- * TODO: remove this???
- * Build [Criteria] with type-safe field names.
+ * Chain [TypedCriteria].
  *
  * @sample typedCriteriaSample
  *
@@ -28,9 +27,8 @@ import org.springframework.data.mongodb.core.find
  * @since 2.2
  * @see typedQuery
  */
-fun chainCriteria(vararg operations: Criteria): Criteria {
-	TODO()
-//	return operations.fold(Criteria()) { chain, operation -> operation.chain(chain) }
+fun chainCriteria(vararg operations: TypedCriteria): Criteria {
+	return operations.fold(Criteria()) { chain, criteria -> chain and criteria }
 }
 
 private fun typedCriteriaSample(mongoOperations: MongoOperations) {
@@ -48,13 +46,10 @@ private fun typedCriteriaSample(mongoOperations: MongoOperations) {
 			(Author::name isEqualTo "Herman Melville"),
 		Book::price exists true
 	)
-	// $or, $nor, $and operators
-	chainCriteria(
-		Book::name isEqualTo "Moby-Dick",
+	// Logical operators
+	(Book::name isEqualTo "Moby-Dick") and
 		(Book::price lt 1200) orOperator (Book::price gt 240)
-	)
+
 	// Nested Properties (i.e. refer to "book.author")
-	chainCriteria(
-		Book::author / Author::name regex "^H"
-	)
+	Book::author / Author::name regex "^H"
 }
