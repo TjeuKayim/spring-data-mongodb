@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.data.mongodb.core.find
 
 /**
+ * TODO: remove this???
  * Build [Criteria] with type-safe field names.
  *
  * @sample typedCriteriaSample
@@ -27,19 +28,10 @@ import org.springframework.data.mongodb.core.find
  * @since 2.2
  * @see typedQuery
  */
-fun typedCriteria(vararg operations: TypedCriteria): Criteria {
-	return operations.fold(Criteria()) { chain, operation -> operation.chain(chain) }
+fun chainCriteria(vararg operations: Criteria): Criteria {
+	TODO()
+//	return operations.fold(Criteria()) { chain, operation -> operation.chain(chain) }
 }
-
-/**
- * Shorthand for `Query(typedCriteria())`.
- *
- * @author Tjeu Kayim
- * @since 2.2
- * @see typedCriteria
- */
-fun typedQuery(vararg criteria: TypedCriteria): Query =
-	Query(typedCriteria(*criteria))
 
 private fun typedCriteriaSample(mongoOperations: MongoOperations) {
 	class Author(val name: String)
@@ -50,19 +42,19 @@ private fun typedCriteriaSample(mongoOperations: MongoOperations) {
 			Book::name isEqualTo "Moby-Dick"
 		)
 	)
-	// Chain with typedCriteria()
-	typedCriteria(
+	// Chain with chainCriteria()
+	chainCriteria(
 		Book::author elemMatch
 			(Author::name isEqualTo "Herman Melville"),
 		Book::price exists true
 	)
 	// $or, $nor, $and operators
-	typedCriteria(
+	chainCriteria(
 		Book::name isEqualTo "Moby-Dick",
-		(Book::price lt 1200) or (Book::price gt 240)
+		(Book::price lt 1200) orOperator (Book::price gt 240)
 	)
 	// Nested Properties (i.e. refer to "book.author")
-	typedCriteria(
+	chainCriteria(
 		Book::author / Author::name regex "^H"
 	)
 }

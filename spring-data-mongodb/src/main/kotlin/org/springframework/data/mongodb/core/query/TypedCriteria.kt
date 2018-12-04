@@ -17,7 +17,6 @@
 package org.springframework.data.mongodb.core.query
 
 import org.bson.BsonRegularExpression
-import org.bson.Document
 import org.springframework.data.domain.Example
 import org.springframework.data.geo.Circle
 import org.springframework.data.geo.Point
@@ -29,27 +28,36 @@ import java.util.regex.Pattern
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
 
-/**
- * Build [Criteria] with Property References as field names.
- * @author Tjeu Kayim
- * @since 2.2
- */
-class TypedCriteria(
-	private val operation: Criteria.() -> Criteria,
-	private val property: KProperty<*>? = null
-) : CriteriaDefinition {
-	val criteria by lazy { chain(Criteria()) }
-
-	fun chain(start: Criteria): Criteria {
-		return (if (property == null) start else start.and(nestedFieldName(property)))
-			.operation()
-	}
-
-	override fun getCriteriaObject(): Document = criteria.criteriaObject
-
-	override fun getKey(): String? = criteria.key
+private fun typedCriteria(operation: Criteria.() -> Criteria, property: KProperty<*>? = null): Criteria {
+	val criteria = Criteria()
+	return (if (property == null) criteria else criteria.and(nestedFieldName(property)))
+		.operation()
 }
 
+
+/**
+ * Creates an 'or' criteria using the $or operator for all of the provided criteria
+ *
+ * Note that mongodb doesn't support an $or operator to be wrapped in a $not operator.
+ * @see Criteria.orOperator
+ */
+infix fun Criteria.orOperator(other: Criteria) = typedCriteria({ orOperator(other) })
+
+/**
+ * Creates a 'nor' criteria using the $nor operator for all of the provided criteria.
+ *
+ * Note that mongodb doesn't support an $nor operator to be wrapped in a $not operator.
+ * @see Criteria.norOperator
+ */
+infix fun Criteria.norOperator(other: Criteria) = typedCriteria({ norOperator(other) })
+
+/**
+ * Creates an 'and' criteria using the $and operator for all of the provided criteria.
+ *
+ * Note that mongodb doesn't support an $and operator to be wrapped in a $not operator.
+ * @see Criteria.andOperator
+ */
+infix fun Criteria.andOperator(other: Criteria) = typedCriteria({ andOperator(other) })
 
 /**
  * Creates a criterion using equality.
@@ -57,7 +65,7 @@ class TypedCriteria(
  * @since 2.2
  * @see Criteria.isEqualTo
  */
-infix fun <T> KProperty<T>.isEqualTo(value: T) = TypedCriteria({ isEqualTo(value) }, this)
+infix fun <T> KProperty<T>.isEqualTo(value: T) = typedCriteria({ isEqualTo(value) }, this)
 
 /**
  * Creates a criterion using the $ne operator.
@@ -67,7 +75,7 @@ infix fun <T> KProperty<T>.isEqualTo(value: T) = TypedCriteria({ isEqualTo(value
  * @since 2.2
  * @see Criteria.ne
  */
-infix fun <T> KProperty<T>.ne(value: T) = TypedCriteria({ ne(value) }, this)
+infix fun <T> KProperty<T>.ne(value: T) = typedCriteria({ ne(value) }, this)
 
 /**
  * Creates a criterion using the $lt operator.
@@ -77,7 +85,7 @@ infix fun <T> KProperty<T>.ne(value: T) = TypedCriteria({ ne(value) }, this)
  * @since 2.2
  * @see Criteria.lt
  */
-infix fun <T> KProperty<T>.lt(value: T) = TypedCriteria({ lt(value) }, this)
+infix fun <T> KProperty<T>.lt(value: T) = typedCriteria({ lt(value) }, this)
 
 /**
  * Creates a criterion using the $lte operator.
@@ -87,7 +95,7 @@ infix fun <T> KProperty<T>.lt(value: T) = TypedCriteria({ lt(value) }, this)
  * @since 2.2
  * @see Criteria.lte
  */
-infix fun <T> KProperty<T>.lte(value: T) = TypedCriteria({ lte(value) }, this)
+infix fun <T> KProperty<T>.lte(value: T) = typedCriteria({ lte(value) }, this)
 
 /**
  * Creates a criterion using the $gt operator.
@@ -97,7 +105,7 @@ infix fun <T> KProperty<T>.lte(value: T) = TypedCriteria({ lte(value) }, this)
  * @since 2.2
  * @see Criteria.gt
  */
-infix fun <T> KProperty<T>.gt(value: T) = TypedCriteria({ gt(value) }, this)
+infix fun <T> KProperty<T>.gt(value: T) = typedCriteria({ gt(value) }, this)
 
 /**
  * Creates a criterion using the $gte operator.
@@ -107,7 +115,7 @@ infix fun <T> KProperty<T>.gt(value: T) = TypedCriteria({ gt(value) }, this)
  * @since 2.2
  * @see Criteria.gte
  */
-infix fun <T> KProperty<T>.gte(value: T) = TypedCriteria({ gte(value) }, this)
+infix fun <T> KProperty<T>.gte(value: T) = typedCriteria({ gte(value) }, this)
 
 /**
  * Creates a criterion using the $in operator.
@@ -117,7 +125,7 @@ infix fun <T> KProperty<T>.gte(value: T) = TypedCriteria({ gte(value) }, this)
  * @since 2.2
  * @see Criteria.inValues
  */
-fun <T> KProperty<T>.inValues(vararg o: Any) = TypedCriteria({ `in`(*o) }, this)
+fun <T> KProperty<T>.inValues(vararg o: Any) = typedCriteria({ `in`(*o) }, this)
 
 /**
  * Creates a criterion using the $in operator.
@@ -127,7 +135,7 @@ fun <T> KProperty<T>.inValues(vararg o: Any) = TypedCriteria({ `in`(*o) }, this)
  * @since 2.2
  * @see Criteria.inValues
  */
-infix fun <T> KProperty<T>.inValues(value: Collection<T>) = TypedCriteria({ `in`(value) }, this)
+infix fun <T> KProperty<T>.inValues(value: Collection<T>) = typedCriteria({ `in`(value) }, this)
 
 /**
  * Creates a criterion using the $nin operator.
@@ -137,7 +145,7 @@ infix fun <T> KProperty<T>.inValues(value: Collection<T>) = TypedCriteria({ `in`
  * @since 2.2
  * @see Criteria.nin
  */
-fun <T> KProperty<T>.nin(vararg o: Any) = TypedCriteria({ nin(*o) }, this)
+fun <T> KProperty<T>.nin(vararg o: Any) = typedCriteria({ nin(*o) }, this)
 
 /**
  * Creates a criterion using the $nin operator.
@@ -147,7 +155,7 @@ fun <T> KProperty<T>.nin(vararg o: Any) = TypedCriteria({ nin(*o) }, this)
  * @since 2.2
  * @see Criteria.nin
  */
-infix fun <T> KProperty<T>.nin(value: Collection<T>) = TypedCriteria({ nin(value) }, this)
+infix fun <T> KProperty<T>.nin(value: Collection<T>) = typedCriteria({ nin(value) }, this)
 
 /**
  * Creates a criterion using the $mod operator.
@@ -157,7 +165,7 @@ infix fun <T> KProperty<T>.nin(value: Collection<T>) = TypedCriteria({ nin(value
  * @since 2.2
  * @see Criteria.mod
  */
-fun KProperty<Number>.mod(value: Number, remainder: Number) = TypedCriteria({ mod(value, remainder) }, this)
+fun KProperty<Number>.mod(value: Number, remainder: Number) = typedCriteria({ mod(value, remainder) }, this)
 
 /**
  * Creates a criterion using the $all operator.
@@ -167,7 +175,7 @@ fun KProperty<Number>.mod(value: Number, remainder: Number) = TypedCriteria({ mo
  * @since 2.2
  * @see Criteria.all
  */
-fun KProperty<*>.all(vararg o: Any) = TypedCriteria({ all(*o) }, this)
+fun KProperty<*>.all(vararg o: Any) = typedCriteria({ all(*o) }, this)
 
 /**
  * Creates a criterion using the $all operator.
@@ -177,7 +185,7 @@ fun KProperty<*>.all(vararg o: Any) = TypedCriteria({ all(*o) }, this)
  * @since 2.2
  * @see Criteria.all
  */
-infix fun KProperty<*>.all(value: Collection<*>) = TypedCriteria({ all(value) }, this)
+infix fun KProperty<*>.all(value: Collection<*>) = typedCriteria({ all(value) }, this)
 
 /**
  * Creates a criterion using the $size operator.
@@ -187,7 +195,7 @@ infix fun KProperty<*>.all(value: Collection<*>) = TypedCriteria({ all(value) },
  * @since 2.2
  * @see Criteria.size
  */
-infix fun KProperty<*>.size(s: Int) = TypedCriteria({ size(s) }, this)
+infix fun KProperty<*>.size(s: Int) = typedCriteria({ size(s) }, this)
 
 /**
  * Creates a criterion using the $exists operator.
@@ -197,7 +205,7 @@ infix fun KProperty<*>.size(s: Int) = TypedCriteria({ size(s) }, this)
  * @since 2.2
  * @see Criteria.exists
  */
-infix fun KProperty<*>.exists(b: Boolean) = TypedCriteria({ exists(b) }, this)
+infix fun KProperty<*>.exists(b: Boolean) = typedCriteria({ exists(b) }, this)
 
 /**
  * Creates a criterion using the $type operator.
@@ -207,7 +215,7 @@ infix fun KProperty<*>.exists(b: Boolean) = TypedCriteria({ exists(b) }, this)
  * @since 2.2
  * @see Criteria.type
  */
-infix fun KProperty<*>.type(t: Int) = TypedCriteria({ type(t) }, this)
+infix fun KProperty<*>.type(t: Int) = typedCriteria({ type(t) }, this)
 
 /**
  * Creates a criterion using the $type operator.
@@ -217,7 +225,7 @@ infix fun KProperty<*>.type(t: Int) = TypedCriteria({ type(t) }, this)
  * @since 2.2
  * @see Criteria.type
  */
-infix fun KProperty<*>.type(t: Collection<JsonSchemaObject.Type>) = TypedCriteria({ type(*t.toTypedArray()) }, this)
+infix fun KProperty<*>.type(t: Collection<JsonSchemaObject.Type>) = typedCriteria({ type(*t.toTypedArray()) }, this)
 
 /**
  * Creates a criterion using the $type operator.
@@ -227,7 +235,7 @@ infix fun KProperty<*>.type(t: Collection<JsonSchemaObject.Type>) = TypedCriteri
  * @since 2.2
  * @see Criteria.type
  */
-fun KProperty<*>.type(vararg t: JsonSchemaObject.Type) = TypedCriteria({ type(*t) }, this)
+fun KProperty<*>.type(vararg t: JsonSchemaObject.Type) = typedCriteria({ type(*t) }, this)
 
 /**
  * Creates a criterion using the $not meta operator which affects the clause directly following
@@ -237,7 +245,7 @@ fun KProperty<*>.type(vararg t: JsonSchemaObject.Type) = TypedCriteria({ type(*t
  * @since 2.2
  * @see Criteria.not
  */
-fun KProperty<*>.not() = TypedCriteria({ not() }, this)
+fun KProperty<*>.not() = typedCriteria({ not() }, this)
 
 /**
  * Creates a criterion using a $regex operator.
@@ -247,7 +255,7 @@ fun KProperty<*>.not() = TypedCriteria({ not() }, this)
  * @since 2.2
  * @see Criteria.regex
  */
-infix fun KProperty<String?>.regex(re: String) = TypedCriteria({ regex(re, null) }, this)
+infix fun KProperty<String?>.regex(re: String) = typedCriteria({ regex(re, null) }, this)
 
 /**
  * Creates a criterion using a $regex and $options operator.
@@ -257,7 +265,7 @@ infix fun KProperty<String?>.regex(re: String) = TypedCriteria({ regex(re, null)
  * @since 2.2
  * @see Criteria.regex
  */
-fun KProperty<String?>.regex(re: String, options: String?) = TypedCriteria({ regex(re, options) }, this)
+fun KProperty<String?>.regex(re: String, options: String?) = typedCriteria({ regex(re, options) }, this)
 
 /**
  * Syntactical sugar for [isEqualTo] making obvious that we create a regex predicate.
@@ -265,7 +273,7 @@ fun KProperty<String?>.regex(re: String, options: String?) = TypedCriteria({ reg
  * @since 2.2
  * @see Criteria.regex
  */
-infix fun KProperty<String?>.regex(re: Regex) = TypedCriteria({ regex(re.toPattern()) }, this)
+infix fun KProperty<String?>.regex(re: Regex) = typedCriteria({ regex(re.toPattern()) }, this)
 
 /**
  * Syntactical sugar for [isEqualTo] making obvious that we create a regex predicate.
@@ -273,7 +281,7 @@ infix fun KProperty<String?>.regex(re: Regex) = TypedCriteria({ regex(re.toPatte
  * @since 2.2
  * @see Criteria.regex
  */
-infix fun KProperty<String?>.regex(re: Pattern) = TypedCriteria({ regex(re) }, this)
+infix fun KProperty<String?>.regex(re: Pattern) = typedCriteria({ regex(re) }, this)
 
 /**
  * Syntactical sugar for [isEqualTo] making obvious that we create a regex predicate.
@@ -281,7 +289,7 @@ infix fun KProperty<String?>.regex(re: Pattern) = TypedCriteria({ regex(re) }, t
  * @since 2.2
  * @see Criteria.regex
  */
-infix fun KProperty<String?>.regex(re: BsonRegularExpression) = TypedCriteria({ regex(re) }, this)
+infix fun KProperty<String?>.regex(re: BsonRegularExpression) = typedCriteria({ regex(re) }, this)
 
 /**
  * Creates a geospatial criterion using a $geoWithin $centerSphere operation. This is only available for
@@ -296,7 +304,7 @@ infix fun KProperty<String?>.regex(re: BsonRegularExpression) = TypedCriteria({ 
  * @since 2.2
  * @see Criteria.withinSphere
  */
-infix fun KProperty<GeoJson<*>>.withinSphere(circle: Circle) = TypedCriteria({ withinSphere(circle) }, this)
+infix fun KProperty<GeoJson<*>>.withinSphere(circle: Circle) = typedCriteria({ withinSphere(circle) }, this)
 
 /**
  * Creates a geospatial criterion using a $geoWithin operation.
@@ -307,7 +315,7 @@ infix fun KProperty<GeoJson<*>>.withinSphere(circle: Circle) = TypedCriteria({ w
  * @since 2.2
  * @see Criteria.within
  */
-infix fun KProperty<GeoJson<*>>.within(shape: Shape) = TypedCriteria({ within(shape) }, this)
+infix fun KProperty<GeoJson<*>>.within(shape: Shape) = typedCriteria({ within(shape) }, this)
 
 /**
  * Creates a geospatial criterion using a $near operation.
@@ -317,7 +325,7 @@ infix fun KProperty<GeoJson<*>>.within(shape: Shape) = TypedCriteria({ within(sh
  * @since 2.2
  * @see Criteria.near
  */
-infix fun KProperty<GeoJson<*>>.near(point: Point) = TypedCriteria({ near(point) }, this)
+infix fun KProperty<GeoJson<*>>.near(point: Point) = typedCriteria({ near(point) }, this)
 
 /**
  * Creates a geospatial criterion using a $nearSphere operation. This is only available for Mongo 1.7 and
@@ -329,7 +337,7 @@ infix fun KProperty<GeoJson<*>>.near(point: Point) = TypedCriteria({ near(point)
  * @since 2.2
  * @see Criteria.nearSphere
  */
-infix fun KProperty<GeoJson<*>>.nearSphere(point: Point) = TypedCriteria({ nearSphere(point) }, this)
+infix fun KProperty<GeoJson<*>>.nearSphere(point: Point) = typedCriteria({ nearSphere(point) }, this)
 
 /**
  * Creates criterion using `$geoIntersects` operator which matches intersections of the given `geoJson`
@@ -338,7 +346,7 @@ infix fun KProperty<GeoJson<*>>.nearSphere(point: Point) = TypedCriteria({ nearS
  * @since 2.2
  * @see Criteria.intersects
  */
-infix fun KProperty<GeoJson<*>>.intersects(geoJson: GeoJson<*>) = TypedCriteria({ intersects(geoJson) }, this)
+infix fun KProperty<GeoJson<*>>.intersects(geoJson: GeoJson<*>) = typedCriteria({ intersects(geoJson) }, this)
 
 /**
  * Creates a geo-spatial criterion using a $maxDistance operation, for use with $near
@@ -349,7 +357,7 @@ infix fun KProperty<GeoJson<*>>.intersects(geoJson: GeoJson<*>) = TypedCriteria(
  * @since 2.2
  * @see Criteria.maxDistance
  */
-infix fun KProperty<GeoJson<*>>.maxDistance(d: Double) = TypedCriteria({ maxDistance(d) }, this)
+infix fun KProperty<GeoJson<*>>.maxDistance(d: Double) = typedCriteria({ maxDistance(d) }, this)
 
 /**
  * Creates a geospatial criterion using a $minDistance operation, for use with $near or
@@ -358,7 +366,7 @@ infix fun KProperty<GeoJson<*>>.maxDistance(d: Double) = TypedCriteria({ maxDist
  * @since 2.2
  * @see Criteria.minDistance
  */
-infix fun KProperty<GeoJson<*>>.minDistance(d: Double) = TypedCriteria({ minDistance(d) }, this)
+infix fun KProperty<GeoJson<*>>.minDistance(d: Double) = typedCriteria({ minDistance(d) }, this)
 
 /**
  * Creates a criterion using the $elemMatch operator
@@ -369,18 +377,7 @@ infix fun KProperty<GeoJson<*>>.minDistance(d: Double) = TypedCriteria({ minDist
  * @since 2.2
  * @see Criteria.elemMatch
  */
-infix fun KProperty<*>.elemMatch(c: Criteria) = TypedCriteria({ elemMatch(c) }, this)
-
-/**
- * Creates a criterion using the $elemMatch operator
- *
- * See [MongoDB Query operator:
-	 * $elemMatch](https://docs.mongodb.com/manual/reference/operator/query/elemMatch/)
- * @author Tjeu Kayim
- * @since 2.2
- * @see Criteria.elemMatch
- */
-infix fun KProperty<*>.elemMatch(c: TypedCriteria) = TypedCriteria({ elemMatch(typedCriteria(c)) }, this)
+infix fun KProperty<*>.elemMatch(c: Criteria) = typedCriteria({ elemMatch(c) }, this)
 
 /**
  * Creates a criterion using the given object as a pattern.
@@ -388,7 +385,7 @@ infix fun KProperty<*>.elemMatch(c: TypedCriteria) = TypedCriteria({ elemMatch(t
  * @since 2.2
  * @see Criteria.alike
  */
-fun alike(sample: Example<*>) = TypedCriteria({ alike(sample) })
+fun alike(sample: Example<*>) = typedCriteria({ alike(sample) })
 
 /**
  * Creates a criterion (`$jsonSchema`) matching documents against a given structure defined by the
@@ -401,7 +398,7 @@ fun alike(sample: Example<*>) = TypedCriteria({ alike(sample) })
  * @see Criteria.andDocumentStructureMatches
  */
 infix fun KProperty<*>.andDocumentStructureMatches(schema: MongoJsonSchema) =
-	TypedCriteria({ andDocumentStructureMatches(schema) }, this)
+	typedCriteria({ andDocumentStructureMatches(schema) }, this)
 
 /**
  * Use [Criteria.BitwiseCriteriaOperators] as gateway to create a criterion using one of the
@@ -417,7 +414,7 @@ infix fun KProperty<*>.andDocumentStructureMatches(schema: MongoJsonSchema) =
  * @see Criteria.bits
  */
 infix fun KProperty<*>.bits(bitwiseCriteria: Criteria.BitwiseCriteriaOperators.() -> Criteria) =
-	TypedCriteria({ bits().let(bitwiseCriteria) }, this)
+	typedCriteria({ bits().let(bitwiseCriteria) }, this)
 
 /**
  * Creates an 'or' criteria using the $or operator for all of the provided criteria
@@ -427,17 +424,7 @@ infix fun KProperty<*>.bits(bitwiseCriteria: Criteria.BitwiseCriteriaOperators.(
  * @since 2.2
  * @see Criteria.orOperator
  */
-fun orOperator(vararg builders: TypedCriteria) = addOperatorWithCriteria(builders, Criteria::orOperator)
-
-/**
- * Creates an 'or' criteria using the $or operator for all of the provided criteria
- *
- * Note that mongodb doesn't support an $or operator to be wrapped in a $not operator.
- * @author Tjeu Kayim
- * @since 2.2
- * @see Criteria.orOperator
- */
-infix fun TypedCriteria.or(other: TypedCriteria) = orOperator(this, other)
+fun orOperator(vararg builders: Criteria) = addOperatorWithCriteria(builders, Criteria::orOperator)
 
 /**
  * Creates a 'nor' criteria using the $nor operator for all of the provided criteria.
@@ -447,17 +434,7 @@ infix fun TypedCriteria.or(other: TypedCriteria) = orOperator(this, other)
  * @since 2.2
  * @see Criteria.norOperator
  */
-fun norOperator(vararg builders: TypedCriteria) = addOperatorWithCriteria(builders, Criteria::norOperator)
-
-/**
- * Creates a 'nor' criteria using the $nor operator for all of the provided criteria.
- *
- * Note that mongodb doesn't support an $nor operator to be wrapped in a $not operator.
- * @author Tjeu Kayim
- * @since 2.2
- * @see Criteria.norOperator
- */
-infix fun TypedCriteria.nor(other: TypedCriteria) = norOperator(this, other)
+fun norOperator(vararg builders: Criteria) = addOperatorWithCriteria(builders, Criteria::norOperator)
 
 /**
  * Creates an 'and' criteria using the $and operator for all of the provided criteria.
@@ -467,22 +444,12 @@ infix fun TypedCriteria.nor(other: TypedCriteria) = norOperator(this, other)
  * @since 2.2
  * @see Criteria.andOperator
  */
-fun andOperator(vararg builders: TypedCriteria) = addOperatorWithCriteria(builders, Criteria::andOperator)
-
-/**
- * Creates an 'and' criteria using the $and operator for all of the provided criteria.
- *
- * Note that mongodb doesn't support an $and operator to be wrapped in a $not operator.
- * @author Tjeu Kayim
- * @since 2.2
- * @see Criteria.andOperator
- */
-infix fun TypedCriteria.and(other: TypedCriteria) = andOperator(this, other)
+fun andOperator(vararg builders: Criteria) = addOperatorWithCriteria(builders, Criteria::andOperator)
 
 private fun addOperatorWithCriteria(
-	builders: Array<out TypedCriteria>,
-	operation: Criteria.(Array<Criteria>) -> Criteria
-) = TypedCriteria({ operation(builders.map { it.criteria }.toTypedArray()) })
+	builders: Array<out Criteria>,
+	operation: Criteria.(Array<out Criteria>) -> Criteria
+) = typedCriteria({ operation(builders) })
 
 /**
  * Build nested properties.
