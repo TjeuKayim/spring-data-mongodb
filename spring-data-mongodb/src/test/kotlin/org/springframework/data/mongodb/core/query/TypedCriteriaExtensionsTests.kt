@@ -19,7 +19,6 @@ package org.springframework.data.mongodb.core.query
 import org.assertj.core.api.Assertions.*
 import org.bson.BsonRegularExpression
 import org.junit.Test
-import org.springframework.data.domain.Example
 import org.springframework.data.geo.Circle
 import org.springframework.data.geo.Point
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint
@@ -337,15 +336,6 @@ class TypedCriteriaExtensionsTests {
 
 		val typed = Book::title elemMatch (Book::price lt 950)
 		val classic = Criteria("title").elemMatch(Criteria("price").lt(950))
-		assertEqualCriteria(typed, classic)
-	}
-
-	@Test
-	fun `alike() should equal classic criteria`() {
-
-		val value = Example.of(Book())
-		val typed = alike(value)
-		val classic = Criteria().alike(value)
 		assertEqualCriteria(typed, classic)
 	}
 
