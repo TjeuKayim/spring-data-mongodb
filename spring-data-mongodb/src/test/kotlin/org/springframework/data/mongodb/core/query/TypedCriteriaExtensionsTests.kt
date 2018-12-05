@@ -40,22 +40,14 @@ class TypedCriteriaExtensionsTests {
 				.and("price").gt(1100)
 				.and("available").isEqualTo(true)
 		)
-		val typed = Query(
-			chainCriteria(
-				Book::price gt 1100,
-				Book::available isEqualTo true
-			)
-		)
+		val typed = Query((Book::price gt 1100) and (Book::available isEqualTo true))
 		assertThat(classic.queryObject).isEqualTo(typed.queryObject)
 	}
 
 	@Test
 	fun `chaining gt & isEqualTo() should equal classic criteria`() {
 
-		val typed = chainCriteria(
-			Book::title isEqualTo "Moby-Dick",
-			Book::price lt 950
-		)
+		val typed = (Book::title isEqualTo "Moby-Dick") and (Book::price lt 950)
 		val classic = Criteria("title").isEqualTo("Moby-Dick")
 			.and("price").lt(950)
 		assertEqualCriteria(typed, classic)
@@ -377,13 +369,9 @@ class TypedCriteriaExtensionsTests {
 	@Test
 	fun `or operator() should equal classic criteria`() {
 
-		val typed = chainCriteria(
-			Book::title isEqualTo "Moby-Dick",
-			orOperator(
-				(Book::price lt 1200),
-				(Book::price gt 240)
-			)
-		)
+		val typed = (Book::title isEqualTo "Moby-Dick").orOperator(
+				Book::price lt 1200,
+				Book::price gt 240)
 		val classic = Criteria("title").isEqualTo("Moby-Dick")
 			.orOperator(
 				Criteria("price").lt(1200),
@@ -395,13 +383,9 @@ class TypedCriteriaExtensionsTests {
 	@Test
 	fun `nor() should equal classic criteria`() {
 
-		val typed = chainCriteria(
-			Book::title isEqualTo "Moby-Dick",
-			norOperator(
-				(Book::price lt 1200),
-				(Book::price gt 240)
-			)
-		)
+		val typed = (Book::title isEqualTo "Moby-Dick").norOperator(
+				Book::price lt 1200,
+				Book::price gt 240)
 		val classic = Criteria("title").isEqualTo("Moby-Dick")
 			.norOperator(
 				Criteria("price").lt(1200),
@@ -413,13 +397,9 @@ class TypedCriteriaExtensionsTests {
 	@Test
 	fun `and() should equal classic criteria`() {
 
-		val typed = chainCriteria(
-			Book::title isEqualTo "Moby-Dick",
-			andOperator(
-				(Book::price lt 1200),
-				(Book::price gt 240)
-			)
-		)
+		val typed = (Book::title isEqualTo "Moby-Dick").andOperator(
+				Book::price lt 1200,
+				Book::price gt 240)
 		val classic = Criteria("title").isEqualTo("Moby-Dick")
 			.andOperator(
 				Criteria("price").lt(1200),
@@ -444,10 +424,7 @@ class TypedCriteriaExtensionsTests {
 	@Test
 	fun `infix or should equal classic criteria`() {
 
-		val typed = chainCriteria(
-			Book::title isEqualTo "Moby-Dick",
-			(Book::price lt 1200) orOperator (Book::price gt 240)
-		)
+		val typed = (Book::title isEqualTo "Moby-Dick") and (Book::price lt 1200 orOperator (Book::price gt 240))
 		val classic = Criteria("title").isEqualTo("Moby-Dick")
 			.orOperator(Criteria("price").lt(1200), Criteria("price").gt(240))
 		assertEqualCriteria(typed, classic)

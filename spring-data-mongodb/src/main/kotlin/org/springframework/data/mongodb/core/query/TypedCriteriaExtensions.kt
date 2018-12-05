@@ -27,15 +27,6 @@ import java.util.regex.Pattern
 import kotlin.reflect.KProperty
 
 /**
- * Chain [TypedCriteria].
- * @author Tjeu Kayim
- * @since 2.2
- */
-fun chainCriteria(vararg operations: TypedCriteria): Criteria {
-	return operations.fold(Criteria()) { chain, criteria -> criteria and chain }
-}
-
-/**
  * Creates a criterion using the given object as a pattern.
  * @author Tjeu Kayim
  * @since 2.2
