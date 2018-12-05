@@ -219,8 +219,9 @@ class TypedCriteriaExtensionsTests {
 	@Test
 	fun `not() should equal classic criteria`() {
 
-		val typed = Book::title.not()
-		val classic = Criteria("title").not()
+		// TODO: improve not() syntax
+		val typed = Book::title.not().isEqualTo("Moby-Dick")
+		val classic = Criteria("title").not().isEqualTo("Moby-Dick")
 		assertEqualCriteria(typed, classic)
 	}
 
