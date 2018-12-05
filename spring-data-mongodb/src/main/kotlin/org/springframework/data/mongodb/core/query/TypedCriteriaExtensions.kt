@@ -27,29 +27,12 @@ import java.util.regex.Pattern
 import kotlin.reflect.KProperty
 
 /**
- * Chain [TypedCriteria].
- * @author Tjeu Kayim
- * @since 2.2
- */
-fun chainCriteria(vararg operations: TypedCriteria): Criteria {
-	return operations.fold(Criteria()) { chain, criteria -> criteria and chain }
-}
-
-/**
  * Creates a criterion using the given object as a pattern.
  * @author Tjeu Kayim
  * @since 2.2
  * @see Criteria.alike
  */
-fun alike(sample: Example<*>) = TypedCriteria { alike(sample) }
-
-/**
- * Wrap [Criteria] method with type-safe field name.
- */
-private fun KProperty<*>.operator(operation: Criteria.() -> Unit): TypedCriteria {
-	val key = nestedFieldName(this)
-	return TypedCriteria(operation, key)
-}
+infix fun <T> KProperty<T>.alike(sample: Example<*>) = Criteria(nestedFieldName(this)).alike(sample)
 
 /**
  * Creates a criterion using equality.
@@ -57,7 +40,7 @@ private fun KProperty<*>.operator(operation: Criteria.() -> Unit): TypedCriteria
  * @since 2.2
  * @see Criteria.isEqualTo
  */
-infix fun <T> KProperty<T>.isEqualTo(value: T) = operator { isEqualTo(value) }
+infix fun <T> KProperty<T>.isEqualTo(value: T) = Criteria(nestedFieldName(this)).isEqualTo(value)
 
 /**
  * Creates a criterion using the $ne operator.
@@ -67,7 +50,7 @@ infix fun <T> KProperty<T>.isEqualTo(value: T) = operator { isEqualTo(value) }
  * @since 2.2
  * @see Criteria.ne
  */
-infix fun <T> KProperty<T>.ne(value: T) = operator { ne(value) }
+infix fun <T> KProperty<T>.ne(value: T) = Criteria(nestedFieldName(this)).ne(value)
 
 /**
  * Creates a criterion using the $lt operator.
@@ -77,7 +60,7 @@ infix fun <T> KProperty<T>.ne(value: T) = operator { ne(value) }
  * @since 2.2
  * @see Criteria.lt
  */
-infix fun <T> KProperty<T>.lt(value: T) = operator { lt(value) }
+infix fun <T> KProperty<T>.lt(value: T) = Criteria(nestedFieldName(this)).lt(value)
 
 /**
  * Creates a criterion using the $lte operator.
@@ -87,7 +70,7 @@ infix fun <T> KProperty<T>.lt(value: T) = operator { lt(value) }
  * @since 2.2
  * @see Criteria.lte
  */
-infix fun <T> KProperty<T>.lte(value: T) = operator { lte(value) }
+infix fun <T> KProperty<T>.lte(value: T) = Criteria(nestedFieldName(this)).lte(value)
 
 /**
  * Creates a criterion using the $gt operator.
@@ -97,7 +80,7 @@ infix fun <T> KProperty<T>.lte(value: T) = operator { lte(value) }
  * @since 2.2
  * @see Criteria.gt
  */
-infix fun <T> KProperty<T>.gt(value: T) = operator { gt(value) }
+infix fun <T> KProperty<T>.gt(value: T) = Criteria(nestedFieldName(this)).gt(value)
 
 /**
  * Creates a criterion using the $gte operator.
@@ -107,7 +90,7 @@ infix fun <T> KProperty<T>.gt(value: T) = operator { gt(value) }
  * @since 2.2
  * @see Criteria.gte
  */
-infix fun <T> KProperty<T>.gte(value: T) = operator { gte(value) }
+infix fun <T> KProperty<T>.gte(value: T) = Criteria(nestedFieldName(this)).gte(value)
 
 /**
  * Creates a criterion using the $in operator.
@@ -117,7 +100,7 @@ infix fun <T> KProperty<T>.gte(value: T) = operator { gte(value) }
  * @since 2.2
  * @see Criteria.inValues
  */
-fun <T> KProperty<T>.inValues(vararg o: Any) = operator { `in`(*o) }
+fun <T> KProperty<T>.inValues(vararg o: Any) = Criteria(nestedFieldName(this)).`in`(*o)
 
 /**
  * Creates a criterion using the $in operator.
@@ -127,7 +110,7 @@ fun <T> KProperty<T>.inValues(vararg o: Any) = operator { `in`(*o) }
  * @since 2.2
  * @see Criteria.inValues
  */
-infix fun <T> KProperty<T>.inValues(value: Collection<T>) = operator { `in`(value) }
+infix fun <T> KProperty<T>.inValues(value: Collection<T>) = Criteria(nestedFieldName(this)).`in`(value)
 
 /**
  * Creates a criterion using the $nin operator.
@@ -137,7 +120,7 @@ infix fun <T> KProperty<T>.inValues(value: Collection<T>) = operator { `in`(valu
  * @since 2.2
  * @see Criteria.nin
  */
-fun <T> KProperty<T>.nin(vararg o: Any) = operator { nin(*o) }
+fun <T> KProperty<T>.nin(vararg o: Any) = Criteria(nestedFieldName(this)).nin(*o)
 
 /**
  * Creates a criterion using the $nin operator.
@@ -147,7 +130,7 @@ fun <T> KProperty<T>.nin(vararg o: Any) = operator { nin(*o) }
  * @since 2.2
  * @see Criteria.nin
  */
-infix fun <T> KProperty<T>.nin(value: Collection<T>) = operator { nin(value) }
+infix fun <T> KProperty<T>.nin(value: Collection<T>) = Criteria(nestedFieldName(this)).nin(value)
 
 /**
  * Creates a criterion using the $mod operator.
@@ -157,7 +140,7 @@ infix fun <T> KProperty<T>.nin(value: Collection<T>) = operator { nin(value) }
  * @since 2.2
  * @see Criteria.mod
  */
-fun KProperty<Number>.mod(value: Number, remainder: Number) = operator { mod(value, remainder) }
+fun KProperty<Number>.mod(value: Number, remainder: Number) = Criteria(nestedFieldName(this)).mod(value, remainder)
 
 /**
  * Creates a criterion using the $all operator.
@@ -167,7 +150,7 @@ fun KProperty<Number>.mod(value: Number, remainder: Number) = operator { mod(val
  * @since 2.2
  * @see Criteria.all
  */
-fun KProperty<*>.all(vararg o: Any) = operator { all(*o) }
+fun KProperty<*>.all(vararg o: Any) = Criteria(nestedFieldName(this)).all(*o)
 
 /**
  * Creates a criterion using the $all operator.
@@ -177,7 +160,7 @@ fun KProperty<*>.all(vararg o: Any) = operator { all(*o) }
  * @since 2.2
  * @see Criteria.all
  */
-infix fun KProperty<*>.all(value: Collection<*>) = operator { all(value) }
+infix fun KProperty<*>.all(value: Collection<*>) = Criteria(nestedFieldName(this)).all(value)
 
 /**
  * Creates a criterion using the $size operator.
@@ -187,7 +170,7 @@ infix fun KProperty<*>.all(value: Collection<*>) = operator { all(value) }
  * @since 2.2
  * @see Criteria.size
  */
-infix fun KProperty<*>.size(s: Int) = operator { size(s) }
+infix fun KProperty<*>.size(s: Int) = Criteria(nestedFieldName(this)).size(s)
 
 /**
  * Creates a criterion using the $exists operator.
@@ -197,7 +180,7 @@ infix fun KProperty<*>.size(s: Int) = operator { size(s) }
  * @since 2.2
  * @see Criteria.exists
  */
-infix fun KProperty<*>.exists(b: Boolean) = operator { exists(b) }
+infix fun KProperty<*>.exists(b: Boolean) = Criteria(nestedFieldName(this)).exists(b)
 
 /**
  * Creates a criterion using the $type operator.
@@ -207,7 +190,7 @@ infix fun KProperty<*>.exists(b: Boolean) = operator { exists(b) }
  * @since 2.2
  * @see Criteria.type
  */
-infix fun KProperty<*>.type(t: Int) = operator { type(t) }
+infix fun KProperty<*>.type(t: Int) = Criteria(nestedFieldName(this)).type(t)
 
 /**
  * Creates a criterion using the $type operator.
@@ -217,7 +200,7 @@ infix fun KProperty<*>.type(t: Int) = operator { type(t) }
  * @since 2.2
  * @see Criteria.type
  */
-infix fun KProperty<*>.type(t: Collection<JsonSchemaObject.Type>) = operator { type(*t.toTypedArray()) }
+infix fun KProperty<*>.type(t: Collection<JsonSchemaObject.Type>) = Criteria(nestedFieldName(this)).type(*t.toTypedArray())
 
 /**
  * Creates a criterion using the $type operator.
@@ -227,7 +210,7 @@ infix fun KProperty<*>.type(t: Collection<JsonSchemaObject.Type>) = operator { t
  * @since 2.2
  * @see Criteria.type
  */
-fun KProperty<*>.type(vararg t: JsonSchemaObject.Type) = operator { type(*t) }
+fun KProperty<*>.type(vararg t: JsonSchemaObject.Type) = Criteria(nestedFieldName(this)).type(*t)
 
 /**
  * Creates a criterion using the $not meta operator which affects the clause directly following
@@ -237,7 +220,7 @@ fun KProperty<*>.type(vararg t: JsonSchemaObject.Type) = operator { type(*t) }
  * @since 2.2
  * @see Criteria.not
  */
-fun KProperty<*>.not() = operator { not() }
+fun KProperty<*>.not() = Criteria(nestedFieldName(this)).not()
 
 /**
  * Creates a criterion using a $regex operator.
@@ -247,7 +230,7 @@ fun KProperty<*>.not() = operator { not() }
  * @since 2.2
  * @see Criteria.regex
  */
-infix fun KProperty<String?>.regex(re: String) = operator { regex(re, null) }
+infix fun KProperty<String?>.regex(re: String) = Criteria(nestedFieldName(this)).regex(re, null)
 
 /**
  * Creates a criterion using a $regex and $options operator.
@@ -257,7 +240,7 @@ infix fun KProperty<String?>.regex(re: String) = operator { regex(re, null) }
  * @since 2.2
  * @see Criteria.regex
  */
-fun KProperty<String?>.regex(re: String, options: String?) = operator { regex(re, options) }
+fun KProperty<String?>.regex(re: String, options: String?) = Criteria(nestedFieldName(this)).regex(re, options)
 
 /**
  * Syntactical sugar for [isEqualTo] making obvious that we create a regex predicate.
@@ -265,7 +248,7 @@ fun KProperty<String?>.regex(re: String, options: String?) = operator { regex(re
  * @since 2.2
  * @see Criteria.regex
  */
-infix fun KProperty<String?>.regex(re: Regex) = operator { regex(re.toPattern()) }
+infix fun KProperty<String?>.regex(re: Regex) = Criteria(nestedFieldName(this)).regex(re.toPattern())
 
 /**
  * Syntactical sugar for [isEqualTo] making obvious that we create a regex predicate.
@@ -273,7 +256,7 @@ infix fun KProperty<String?>.regex(re: Regex) = operator { regex(re.toPattern())
  * @since 2.2
  * @see Criteria.regex
  */
-infix fun KProperty<String?>.regex(re: Pattern) = operator { regex(re) }
+infix fun KProperty<String?>.regex(re: Pattern) = Criteria(nestedFieldName(this)).regex(re)
 
 /**
  * Syntactical sugar for [isEqualTo] making obvious that we create a regex predicate.
@@ -281,7 +264,7 @@ infix fun KProperty<String?>.regex(re: Pattern) = operator { regex(re) }
  * @since 2.2
  * @see Criteria.regex
  */
-infix fun KProperty<String?>.regex(re: BsonRegularExpression) = operator { regex(re) }
+infix fun KProperty<String?>.regex(re: BsonRegularExpression) = Criteria(nestedFieldName(this)).regex(re)
 
 /**
  * Creates a geospatial criterion using a $geoWithin $centerSphere operation. This is only available for
@@ -296,7 +279,7 @@ infix fun KProperty<String?>.regex(re: BsonRegularExpression) = operator { regex
  * @since 2.2
  * @see Criteria.withinSphere
  */
-infix fun KProperty<GeoJson<*>>.withinSphere(circle: Circle) = operator { withinSphere(circle) }
+infix fun KProperty<GeoJson<*>>.withinSphere(circle: Circle) = Criteria(nestedFieldName(this)).withinSphere(circle)
 
 /**
  * Creates a geospatial criterion using a $geoWithin operation.
@@ -307,7 +290,7 @@ infix fun KProperty<GeoJson<*>>.withinSphere(circle: Circle) = operator { within
  * @since 2.2
  * @see Criteria.within
  */
-infix fun KProperty<GeoJson<*>>.within(shape: Shape) = operator { within(shape) }
+infix fun KProperty<GeoJson<*>>.within(shape: Shape) = Criteria(nestedFieldName(this)).within(shape)
 
 /**
  * Creates a geospatial criterion using a $near operation.
@@ -317,7 +300,7 @@ infix fun KProperty<GeoJson<*>>.within(shape: Shape) = operator { within(shape) 
  * @since 2.2
  * @see Criteria.near
  */
-infix fun KProperty<GeoJson<*>>.near(point: Point) = operator { near(point) }
+infix fun KProperty<GeoJson<*>>.near(point: Point) = Criteria(nestedFieldName(this)).near(point)
 
 /**
  * Creates a geospatial criterion using a $nearSphere operation. This is only available for Mongo 1.7 and
@@ -329,7 +312,7 @@ infix fun KProperty<GeoJson<*>>.near(point: Point) = operator { near(point) }
  * @since 2.2
  * @see Criteria.nearSphere
  */
-infix fun KProperty<GeoJson<*>>.nearSphere(point: Point) = operator { nearSphere(point) }
+infix fun KProperty<GeoJson<*>>.nearSphere(point: Point) = Criteria(nestedFieldName(this)).nearSphere(point)
 
 /**
  * Creates criterion using `$geoIntersects` operator which matches intersections of the given `geoJson`
@@ -338,7 +321,7 @@ infix fun KProperty<GeoJson<*>>.nearSphere(point: Point) = operator { nearSphere
  * @since 2.2
  * @see Criteria.intersects
  */
-infix fun KProperty<GeoJson<*>>.intersects(geoJson: GeoJson<*>) = operator { intersects(geoJson) }
+infix fun KProperty<GeoJson<*>>.intersects(geoJson: GeoJson<*>) = Criteria(nestedFieldName(this)).intersects(geoJson)
 
 /**
  * Creates a geo-spatial criterion using a $maxDistance operation, for use with $near
@@ -349,7 +332,7 @@ infix fun KProperty<GeoJson<*>>.intersects(geoJson: GeoJson<*>) = operator { int
  * @since 2.2
  * @see Criteria.maxDistance
  */
-infix fun KProperty<GeoJson<*>>.maxDistance(d: Double) = operator { maxDistance(d) }
+infix fun KProperty<GeoJson<*>>.maxDistance(d: Double) = Criteria(nestedFieldName(this)).maxDistance(d)
 
 /**
  * Creates a geospatial criterion using a $minDistance operation, for use with $near or
@@ -358,7 +341,7 @@ infix fun KProperty<GeoJson<*>>.maxDistance(d: Double) = operator { maxDistance(
  * @since 2.2
  * @see Criteria.minDistance
  */
-infix fun KProperty<GeoJson<*>>.minDistance(d: Double) = operator { minDistance(d) }
+infix fun KProperty<GeoJson<*>>.minDistance(d: Double) = Criteria(nestedFieldName(this)).minDistance(d)
 
 /**
  * Creates a criterion using the $elemMatch operator
@@ -369,7 +352,7 @@ infix fun KProperty<GeoJson<*>>.minDistance(d: Double) = operator { minDistance(
  * @since 2.2
  * @see Criteria.elemMatch
  */
-infix fun KProperty<*>.elemMatch(c: Criteria) = operator { elemMatch(c) }
+infix fun KProperty<*>.elemMatch(c: Criteria) = Criteria(nestedFieldName(this)).elemMatch(c)
 
 /**
  * Creates a criterion (`$jsonSchema`) matching documents against a given structure defined by the
@@ -382,7 +365,7 @@ infix fun KProperty<*>.elemMatch(c: Criteria) = operator { elemMatch(c) }
  * @see Criteria.andDocumentStructureMatches
  */
 infix fun KProperty<*>.andDocumentStructureMatches(schema: MongoJsonSchema) =
-	operator { andDocumentStructureMatches(schema) }
+        Criteria(nestedFieldName(this)).andDocumentStructureMatches(schema)
 
 /**
  * Use [Criteria.BitwiseCriteriaOperators] as gateway to create a criterion using one of the
@@ -398,15 +381,7 @@ infix fun KProperty<*>.andDocumentStructureMatches(schema: MongoJsonSchema) =
  * @see Criteria.bits
  */
 infix fun KProperty<*>.bits(bitwiseCriteria: Criteria.BitwiseCriteriaOperators.() -> Criteria) =
-	operator { bits().let(bitwiseCriteria) }
-
-/**
- * Build TypedCriteria for logical operators (or, nor & and).
- */
-private fun logicalOperator(
-	operation: Criteria.(Array<out Criteria>) -> Criteria,
-	vararg builders: Criteria
-) = TypedCriteria { operation(builders) }
+        Criteria(nestedFieldName(this)).bits().let(bitwiseCriteria)
 
 /**
  * Creates an 'or' criteria using the $or operator for all of the provided criteria
@@ -416,7 +391,7 @@ private fun logicalOperator(
  * @since 2.2
  * @see Criteria.orOperator
  */
-fun orOperator(vararg builders: Criteria) = logicalOperator(Criteria::orOperator, *builders)
+infix fun Criteria.orOperator(other: Criteria): Criteria = this.orOperator(other)
 
 /**
  * Creates a 'nor' criteria using the $nor operator for all of the provided criteria.
@@ -426,7 +401,7 @@ fun orOperator(vararg builders: Criteria) = logicalOperator(Criteria::orOperator
  * @since 2.2
  * @see Criteria.norOperator
  */
-fun norOperator(vararg builders: Criteria) = logicalOperator(Criteria::norOperator, *builders)
+infix fun Criteria.norOperator(other: Criteria): Criteria = this.norOperator(other)
 
 /**
  * Creates an 'and' criteria using the $and operator for all of the provided criteria.
@@ -436,34 +411,10 @@ fun norOperator(vararg builders: Criteria) = logicalOperator(Criteria::norOperat
  * @since 2.2
  * @see Criteria.andOperator
  */
-fun andOperator(vararg builders: Criteria) = logicalOperator(Criteria::andOperator, *builders)
+infix fun Criteria.andOperator(other: Criteria): Criteria = this.andOperator(other)
 
-/**
- * Creates an 'or' criteria using the $or operator for all of the provided criteria
- *
- * Note that mongodb doesn't support an $or operator to be wrapped in a $not operator.
- * @author Tjeu Kayim
- * @since 2.2
- * @see Criteria.orOperator
- */
-infix fun Criteria.orOperator(other: Criteria) = logicalOperator(Criteria::orOperator, this, other)
+infix fun Criteria.and(other: Criteria): Criteria {
+    // TODO
+    return this
+}
 
-/**
- * Creates a 'nor' criteria using the $nor operator for all of the provided criteria.
- *
- * Note that mongodb doesn't support an $nor operator to be wrapped in a $not operator.
- * @author Tjeu Kayim
- * @since 2.2
- * @see Criteria.norOperator
- */
-infix fun Criteria.norOperator(other: Criteria) = logicalOperator(Criteria::norOperator, this, other)
-
-/**
- * Creates an 'and' criteria using the $and operator for all of the provided criteria.
- *
- * Note that mongodb doesn't support an $and operator to be wrapped in a $not operator.
- * @author Tjeu Kayim
- * @since 2.2
- * @see Criteria.andOperator
- */
-infix fun Criteria.andOperator(other: Criteria) = logicalOperator(Criteria::andOperator, this, other)
