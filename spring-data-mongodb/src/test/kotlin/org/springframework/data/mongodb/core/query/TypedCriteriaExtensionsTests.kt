@@ -211,8 +211,8 @@ class TypedCriteriaExtensionsTests {
 	fun `not() should equal classic criteria`() {
 
 		// TODO: improve not() syntax
-		val typed = Book::title.not().isEqualTo("Moby-Dick")
-		val classic = Criteria("title").not().isEqualTo("Moby-Dick")
+		val typed = Book::price.not().lt(123)
+		val classic = Criteria("price").not().lt(123)
 		assertEqualCriteria(typed, classic)
 	}
 
@@ -413,11 +413,42 @@ class TypedCriteriaExtensionsTests {
 	}
 
 	@Test
-	fun `infix or should equal classic criteria`() {
+	fun `isEqualTo and orOperator should equal classic criteria`() {
 
 		val typed = (Book::title isEqualTo "Moby-Dick") and (Book::price lt 1200 orOperator (Book::price gt 240))
 		val classic = Criteria("title").isEqualTo("Moby-Dick")
 			.orOperator(Criteria("price").lt(1200), Criteria("price").gt(240))
+		assertEqualCriteria(typed, classic)
+	}
+
+	@Test
+	fun `another complex chained composition`() {
+
+		val typed = (Book::author elemMatch (Author::name ne "Herman Melville")) and
+			(Book::price lt 1200 orOperator (Book::price gt 240)) and
+			(Book::title regex "^a" norOperator (Book::title regex "b$"))
+
+		val classic = Criteria("book.author").ne("Herman Melville")
+			.orOperator(Criteria("price").lt(1200), Criteria("price").gt(240))
+			.norOperator(Criteria("title").regex("^a"), Criteria("title").regex("b$"))
+		assertEqualCriteria(typed, classic)
+	}
+
+	@Test
+	fun `orOperator and isEqualTo should equal classic criteria`() {
+
+		val typed = (Book::price lt 1200 orOperator (Book::price gt 240)) and (Book::title isEqualTo "Moby-Dick")
+		val classic = Criteria()
+			.orOperator(Criteria("price").lt(1200), Criteria("price").gt(240))
+			.and("title").isEqualTo("Moby-Dick")
+		assertEqualCriteria(typed, classic)
+	}
+
+	@Test
+	fun `infix or should equal classic criteria`() {
+
+		val typed = (Book::price lt 1200) orOperator (Book::price gt 240)
+		val classic = Criteria().orOperator(Criteria("price").lt(1200), Criteria("price").gt(240))
 		assertEqualCriteria(typed, classic)
 	}
 

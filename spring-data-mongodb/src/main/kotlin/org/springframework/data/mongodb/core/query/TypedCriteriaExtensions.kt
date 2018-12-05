@@ -391,7 +391,7 @@ infix fun KProperty<*>.bits(bitwiseCriteria: Criteria.BitwiseCriteriaOperators.(
  * @since 2.2
  * @see Criteria.orOperator
  */
-infix fun Criteria.orOperator(other: Criteria): Criteria = this.orOperator(other)
+infix fun Criteria.orOperator(other: Criteria): Criteria = Criteria().orOperator(this, other)
 
 /**
  * Creates a 'nor' criteria using the $nor operator for all of the provided criteria.
@@ -401,7 +401,7 @@ infix fun Criteria.orOperator(other: Criteria): Criteria = this.orOperator(other
  * @since 2.2
  * @see Criteria.norOperator
  */
-infix fun Criteria.norOperator(other: Criteria): Criteria = this.norOperator(other)
+infix fun Criteria.norOperator(other: Criteria): Criteria = Criteria().norOperator(this, other)
 
 /**
  * Creates an 'and' criteria using the $and operator for all of the provided criteria.
@@ -411,10 +411,10 @@ infix fun Criteria.norOperator(other: Criteria): Criteria = this.norOperator(oth
  * @since 2.2
  * @see Criteria.andOperator
  */
-infix fun Criteria.andOperator(other: Criteria): Criteria = this.andOperator(other)
+infix fun Criteria.andOperator(other: Criteria): Criteria = Criteria().andOperator(this, other)
 
 infix fun Criteria.and(other: Criteria): Criteria {
-    // TODO
-    return this
+	// TODO: Fix weird behaviour (test `isEqualTo and orOperator` fails)
+    return registerCriteriaChainElement(other)
 }
 
