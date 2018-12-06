@@ -679,7 +679,7 @@ public class Criteria implements CriteriaDefinition {
 		return registerCriteriaChainElement(new Criteria("$and").is(bsonList));
 	}
 
-	Criteria registerCriteriaChainElement(Criteria criteria) {
+	private Criteria registerCriteriaChainElement(Criteria criteria) {
 
 		if (lastOperatorWasNot()) {
 			throw new IllegalArgumentException(
